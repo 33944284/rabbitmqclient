@@ -1,0 +1,77 @@
+package cn.com.sinosure.mq;
+
+public enum MQTypeEnum {
+
+	EDOC2BIZ("EDOC-BIZ", "EDOC-BIZ", "EDOC-BIZ", "EDOC-BIZ", "EDOC-BIZ"),
+	
+	QUOTA2EDOC("QUOTA-EDOC", "QUOTA-EDOC", "QUOTA-EDOC", "QUOTA-EDOC", "QUOTA-EDOC"), 
+	
+	DMC2BIZ("DMC-BIZ", "DMC-BIZ", "DMC-BIZ", "DMC-BIZ", "DMC-BIZ"), 
+	
+	EDOC2RBAC("EDOC-RBAC", "edoc-rbac", "edoc-rbac", "EDOC-RBAC", "EDOC-RBAC"), 
+	
+	MASTERDATA2ALL("MASTER-ALL","MASTER-ALL", "MASTER-ALL", "MASTER-ALL", "MASTER-ALL");
+	
+	public String getVhost() {
+		return vhost;
+	}
+
+	public void setVhost(String vhost) {
+		this.vhost = vhost;
+	}
+
+	public String getExchange() {
+		return exchange;
+	}
+
+	public void setExchange(String exchange) {
+		this.exchange = exchange;
+	}
+
+	public String getRoutingKey() {
+		return routingKey;
+	}
+
+	public void setRoutingKey(String routingKey) {
+		this.routingKey = routingKey;
+	}
+
+	public String getUser() {
+		return user;
+	}
+
+	public void setUser(String user) {
+		this.user = user;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	private String vhost;
+	private String user;
+	private String password;
+	private String exchange;
+	private String routingKey;
+
+	public static String getHost() {
+		return "10.1.95.144";
+	}
+
+	public static int getPort() {
+		return 5670;
+	}
+
+	MQTypeEnum(String vhost, String user, String password, String exchange,
+			String routingKey) {
+		this.vhost = vhost;
+		this.user = user;
+		this.password = password;
+		this.exchange = exchange;
+		this.routingKey = routingKey;
+	}
+}
