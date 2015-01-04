@@ -19,6 +19,7 @@ public class DefaultMessagePublisher implements MessagePublisher {
 
 	private static final Logger LOGGER = LoggerFactory
 			.getLogger(DefaultMessagePublisher.class);
+
 	private ObjectMapper objectMapper = new ObjectMapper();
 
 	private ConnectionFactory conFactory;
@@ -78,8 +79,8 @@ public class DefaultMessagePublisher implements MessagePublisher {
 		String messageJson = objectMapper.writeValueAsString(messageBody);
 
 		BasicProperties.Builder propsBuilder = new BasicProperties().builder()
-				.contentType(businessType.toString())// ҵ������
-				.messageId(UUID.randomUUID().toString());// ��ϢID
+				.contentType(businessType.toString())//  
+				.messageId(UUID.randomUUID().toString());// 
 
 		channel.basicPublish(businessType.getExchange(),
 				businessType.getRoutingKey(), propsBuilder.build(),
