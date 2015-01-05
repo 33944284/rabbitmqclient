@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cn.com.sinosure.mq.MQException;
-import cn.com.sinosure.mq.MQTypeEnum;
+import cn.com.sinosure.mq.MQEnum;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.AMQP.BasicProperties;
@@ -23,9 +23,9 @@ public class DefaultMessagePublisher implements MessagePublisher {
 	private ObjectMapper objectMapper = new ObjectMapper();
 
 	private ConnectionFactory conFactory;
-	private MQTypeEnum businessType;
+	private MQEnum businessType;
 
-	public DefaultMessagePublisher(MQTypeEnum businessType,
+	public DefaultMessagePublisher(MQEnum businessType,
 			ConnectionFactory conFactory) {
 		this.businessType = businessType;
 		this.conFactory = conFactory;

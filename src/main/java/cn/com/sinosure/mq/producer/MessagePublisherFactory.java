@@ -3,12 +3,12 @@ package cn.com.sinosure.mq.producer;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import cn.com.sinosure.mq.MQTypeEnum;
+import cn.com.sinosure.mq.MQEnum;
 import cn.com.sinosure.mq.connection.SingleConnectionFactory;
 
 public class MessagePublisherFactory {
 
-	private static Map<MQTypeEnum, MessagePublisher> messagePublisherMap = new ConcurrentHashMap<MQTypeEnum, MessagePublisher>();
+	private static Map<MQEnum, MessagePublisher> messagePublisherMap = new ConcurrentHashMap<MQEnum, MessagePublisher>();
 
 	/**
 	 * 创建消息发送器
@@ -18,7 +18,7 @@ public class MessagePublisherFactory {
 	 * @return
 	 */
 	public static synchronized MessagePublisher getMessagePublisher(
-			MQTypeEnum businessType) {
+			MQEnum businessType) {
 		if (messagePublisherMap.containsKey(businessType)) {
 			return messagePublisherMap.get(businessType);
 		}

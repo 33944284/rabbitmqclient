@@ -11,7 +11,7 @@ import javax.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cn.com.sinosure.mq.MQTypeEnum;
+import cn.com.sinosure.mq.MQEnum;
 
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -58,7 +58,7 @@ public class SingleConnectionFactory extends ConnectionFactory {
 
 	private final Object operationOnConnectionMonitor = new Object();
 
-	MQTypeEnum type;
+	MQEnum type;
 
 	public SingleConnectionFactory() {
 		super();
@@ -69,7 +69,7 @@ public class SingleConnectionFactory extends ConnectionFactory {
 		connectionShutdownListener = new ConnectionShutDownListener();
 	}
 
-	public SingleConnectionFactory(MQTypeEnum type) {
+	public SingleConnectionFactory(MQEnum type) {
 		this();
 		this.type = type;
 	}

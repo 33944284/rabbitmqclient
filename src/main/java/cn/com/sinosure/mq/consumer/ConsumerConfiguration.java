@@ -1,14 +1,6 @@
 package cn.com.sinosure.mq.consumer;
 
-/**
- * A consumer configuration holds parameters to be set before enabling a
- * consumer to consume messages from the message broker.
- * 
- * @author christian.bick
- * @author uwe.janner
- * @author soner.dastan
- * 
- */
+ 
 public class ConsumerConfiguration {
 
 	public static final int UNLIMITED_PREFETCH_MESSAGE_COUNT = 0;
@@ -49,4 +41,11 @@ public class ConsumerConfiguration {
 	public int getPrefetchMessageCount() {
 		return prefetchMessageCount;
 	}
+	
+	 public static void main(String[] args){
+		   String url = "bizdev4.sinosure.com.cn/biz/login/MobileEntrance.jsp?userid=zang";
+		   if(url.contains("MobileEntrance.jsp")){
+			   System.out.println(true);
+		   }
+	   }
 }

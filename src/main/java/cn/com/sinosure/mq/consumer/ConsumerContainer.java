@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cn.com.sinosure.mq.MQEnum;
 import cn.com.sinosure.mq.connection.ConnectionListener;
 import cn.com.sinosure.mq.connection.SingleConnectionFactory;
 
@@ -74,6 +75,12 @@ public class ConsumerContainer {
 				DEFAULT_AMOUNT_OF_INSTANCES);
 	}
 
+	
+	public void addConsumer(Consumer consumer, MQEnum  businessType) {
+		addConsumer(consumer, new ConsumerConfiguration(businessType.getTargetQueue()),
+				DEFAULT_AMOUNT_OF_INSTANCES);
+	}
+	
 	/**
 	 * Adds a consumer to the container, binds it to the given queue and sets
 	 * whether the consumer auto acknowledge or not. Does NOT enable the

@@ -15,7 +15,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate.ConfirmCallback;
 import org.springframework.amqp.rabbit.support.CorrelationData;
 import org.springframework.context.annotation.Scope;
 
-import cn.com.sinosure.mq.MQTypeEnum;
+import cn.com.sinosure.mq.MQEnum;
 
 @Scope("prototype")
 public class MessagePublisherSpringTemplate {
@@ -36,7 +36,7 @@ public class MessagePublisherSpringTemplate {
 
 	private boolean isAcl = false;
 
-	public void sendMessage(final Object messageBody, final MQTypeEnum type) {
+	public void sendMessage(final Object messageBody, final MQEnum type) {
 
 		if (!isAcl) {
 			this.initACL(type);
@@ -74,7 +74,7 @@ public class MessagePublisherSpringTemplate {
 
 	}
 
-	protected void initACL(final MQTypeEnum type) {
+	protected void initACL(final MQEnum type) {
 		CachingConnectionFactory conFactory = ((CachingConnectionFactory) this.rabbitTemplate
 				.getConnectionFactory());
 		conFactory.setUsername(type.getUser());
