@@ -74,7 +74,7 @@ public abstract class MessageConsumer extends ConsumerContainer.ManagedConsumer 
 			BasicProperties properties, byte[] body) throws IOException {
 		LOGGER.debug("Consumer {}: Received handle delivery", consumerTag);
 
-		AmqpMessage message = new AmqpMessage(envelope, properties, body);
+		AmqpMessage message = new AmqpMessage(envelope.getExchange(),envelope.getRoutingKey(), properties, body);
 
 		try {
 			LOGGER.info("Consumer {}: Received message {}", consumerTag,

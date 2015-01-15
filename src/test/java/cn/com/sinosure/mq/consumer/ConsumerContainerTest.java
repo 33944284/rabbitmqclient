@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cn.com.sinosure.mq.MQEnum;
+import cn.com.sinosure.mq.config.MQPropertiesResolver;
 import cn.com.sinosure.mq.connection.SingleConnectionFactory;
 import cn.com.sinosure.mq.producer.MessagePublisher;
 import cn.com.sinosure.mq.producer.MessagePublisherFactory;
@@ -31,16 +32,14 @@ public class ConsumerContainerTest {
     public void before() throws Exception {
 //        brokerSetup = new TestBrokerSetup();
         
-        connectionFactory = new SingleConnectionFactory(MQEnum.EDOC2RBAC);
-        connectionFactory.setHost("10.1.95.144");
-        connectionFactory.setPort(5670);
-        publisher = MessagePublisherFactory.getMessagePublisher(MQEnum.EDOC2RBAC);
+
+        publisher = MessagePublisherFactory.getMessagePublisher(MQPropertiesResolver.getMQProperties("rabbit.rbac-biz"));
     }
     
     @After
     public void after() throws Exception {
 //        brokerSetup.tearDown();
-        connectionFactory.close();
+//        connectionFactory.close();
     }
     
     @Test
@@ -58,8 +57,8 @@ public class ConsumerContainerTest {
 //     
 //        ConsumerContainer consumerContainer = prepareConsumerContainer(
 //            new DefaultMessageHandler(), "edoc2rbac");
-        ConsumerContainer consumerContainer = new ConsumerContainer(connectionFactory);
-        consumerContainer.addConsumer( new DefaultMessageHandler(), MQEnum.EDOC2RBAC);
+        ConsumerContainer consumerContainer = new ConsumerContainer();
+        consumerContainer.addConsumer( new DefaultMessageHandler(), MQPropertiesResolver.getMQProperties("rabbit.rbac-biz"));
         consumerContainer.startAllConsumers();
         Thread.sleep(1000);
         int activeConsumerCount = consumerContainer.getActiveConsumers().size();
@@ -71,7 +70,7 @@ public class ConsumerContainerTest {
     public void shouldReActivateAllConsumers() throws Exception {
     
         ConsumerContainer consumerContainer = prepareConsumerContainer(
-            new DefaultMessageHandler(), MQEnum.EDOC2RBAC);
+            new DefaultMessageHandler(), MQPropertiesResolver.getMQProperties("rabbit.rbac-biz"));
         consumerContainer.startAllConsumers();
         Thread.sleep(1000);
         int activeConsumerCount = consumerContainer.getActiveConsumers().size();
@@ -93,9 +92,9 @@ public class ConsumerContainerTest {
         MessageConsumer consumer1 = new DefaultMessageHandler();
         MessageConsumer consumer2 = new DefaultMessageHandler();
         MessageConsumer consumer3 = new DefaultMessageHandler();
-        ConsumerContainer consumerContainer = prepareConsumerContainer(consumer1, MQEnum.EDOC2RBAC, 100);
-        consumerContainer.addConsumer(consumer2, MQEnum.EDOC2RBAC.getTargetQueue(), 100,  1);
-        consumerContainer.addConsumer(consumer3,MQEnum.EDOC2RBAC.getTargetQueue(), 100,  1);
+        ConsumerContainer consumerContainer = prepareConsumerContainer(consumer1,MQPropertiesResolver.getMQProperties("rabbit.rbac-biz"), 100);
+        consumerContainer.addConsumer(consumer2, MQPropertiesResolver.getMQProperties("rabbit.rbac-biz"));
+        consumerContainer.addConsumer(consumer3,MQPropertiesResolver.getMQProperties("rabbit.rbac-biz"));
         //        ConsumerContainer consumerContainer = prepareConsumerContainer(consumer2, "edoc2rbac", 1000);
         consumerContainer.startAllConsumers();
 //        Thread.sleep(1000);
@@ -141,43 +140,33 @@ public class ConsumerContainerTest {
     @Test(expected = IOException.class)
     public void shouldFailToStartConsumers() throws Exception {
      
-        MessageConsumer consumer1 = new DefaultMessageHandler();
-        ConsumerContainer consumerContainer = prepareConsumerContainer(consumer1, "edoc2rbac1");
-        consumerContainer.startAllConsumers();
+      
     }
     
     @Test
     public void shouldActivateConsumersUsingHighAvailability() throws Exception {
        
         MessageConsumer consumer1 = new DefaultMessageHandler();
-        ConsumerContainer consumerContainer = prepareConsumerContainer(consumer1, MQEnum.EDOC2RBAC);
+        ConsumerContainer consumerContainer = prepareConsumerContainer(consumer1, MQPropertiesResolver.getMQProperties("rabbit.rbac-biz"));
         consumerContainer.startAllConsumers();
         Thread.sleep(1000);
         int activeConsumerCount = consumerContainer.getActiveConsumers().size();
         Assert.assertEquals(1, activeConsumerCount);
     }
     
-    private ConsumerContainer prepareConsumerContainer(MessageConsumer consumer, String queue) {
-        ConsumerContainer consumerContainer = new ConsumerContainer(connectionFactory);
-        consumerContainer.addConsumer(consumer, queue);
-        return consumerContainer;
-    }
+   
 
     private ConsumerContainer prepareConsumerContainer(MessageConsumer consumer, MQEnum businessType) {
-        ConsumerContainer consumerContainer = new ConsumerContainer(connectionFactory);
-        consumerContainer.addConsumer(consumer, businessType.getTargetQueue());
+        ConsumerContainer consumerContainer = new ConsumerContainer();
+        consumerContainer.addConsumer(consumer, businessType);
         return consumerContainer;
     }
     
     private ConsumerContainer prepareConsumerContainer(MessageConsumer consumer, MQEnum businessType, int prefetchMessageCount) {
-        ConsumerContainer consumerContainer = new ConsumerContainer(connectionFactory);
-        consumerContainer.addConsumer(consumer, businessType.getTargetQueue(), prefetchMessageCount, 1);
+        ConsumerContainer consumerContainer = new ConsumerContainer();
+        consumerContainer.addConsumer(consumer, businessType);
         return consumerContainer;
     }
-    private ConsumerContainer prepareConsumerContainer(MessageConsumer consumer, String queue, int prefetchMessageCount) {
-        ConsumerContainer consumerContainer = new ConsumerContainer(connectionFactory);
-        consumerContainer.addConsumer(consumer, queue, prefetchMessageCount, 1);
-        return consumerContainer;
-    }
+    
 
 }

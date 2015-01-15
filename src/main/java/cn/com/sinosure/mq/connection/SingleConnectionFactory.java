@@ -58,9 +58,11 @@ public class SingleConnectionFactory extends ConnectionFactory {
 
 	private final Object operationOnConnectionMonitor = new Object();
 
-	MQEnum type;
+	String vhost;
+	String user;
+	String password;
 
-	public SingleConnectionFactory() {
+	private SingleConnectionFactory() {
 		super();
 		setRequestedHeartbeat(CONNECTION_HEARTBEAT_IN_SEC);
 		setConnectionTimeout(CONNECTION_TIMEOUT_IN_MS);
@@ -69,9 +71,11 @@ public class SingleConnectionFactory extends ConnectionFactory {
 		connectionShutdownListener = new ConnectionShutDownListener();
 	}
 
-	public SingleConnectionFactory(MQEnum type) {
+	public SingleConnectionFactory(String vhost,String user,String password) {
 		this();
-		this.type = type;
+		this.vhost = vhost;
+		this.user = user;
+		this.password = password;
 	}
 
 	/**
@@ -269,9 +273,9 @@ public class SingleConnectionFactory extends ConnectionFactory {
 	}
 
 	void setAcl() {
-		super.setVirtualHost(this.type.getVhost());
-		super.setUsername(this.type.getUser());
-		super.setPassword(this.type.getPassword());
+		super.setVirtualHost(this.vhost);
+		super.setUsername(this.user);
+		super.setPassword(this.password);
 	}
 
 	/**

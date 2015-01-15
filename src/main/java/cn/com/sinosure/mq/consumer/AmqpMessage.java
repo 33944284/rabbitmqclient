@@ -6,19 +6,17 @@ import com.rabbitmq.client.Envelope;
 
 public class AmqpMessage {
 
-	private final Envelope envelope;
 	private final AMQP.BasicProperties properties;
 	private final byte[] body;
+	private final String exchange;
+	private final String routingKey;
 
-	public AmqpMessage(Envelope envelope, AMQP.BasicProperties properties,
-			byte[] body) {
-		this.envelope = envelope;
+	public AmqpMessage(String exchange, String routingKey,
+			AMQP.BasicProperties properties, byte[] body) {
+		this.exchange = exchange;
+		this.routingKey = routingKey;
 		this.properties = properties;
 		this.body = body;
-	}
-
-	public Envelope getEnvelope() {
-		return envelope;
 	}
 
 	public BasicProperties getProperties() {
@@ -29,4 +27,11 @@ public class AmqpMessage {
 		return body;
 	}
 
+	public String getExchange() {
+		return exchange;
+	}
+
+	public String getRoutingKey() {
+		return routingKey;
+	}
 }

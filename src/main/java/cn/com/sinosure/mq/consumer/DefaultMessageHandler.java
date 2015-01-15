@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class DefaultMessageHandler extends MessageConsumer {
+	
 	private ObjectMapper objectMapper = new ObjectMapper();
 
 	public void handleMessage(AmqpMessage message) throws IOException {

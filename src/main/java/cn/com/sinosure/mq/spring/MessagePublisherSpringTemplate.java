@@ -14,6 +14,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate.ConfirmCallback;
 import org.springframework.amqp.rabbit.support.CorrelationData;
 import org.springframework.context.annotation.Scope;
+import org.springframework.util.StringUtils;
 
 import cn.com.sinosure.mq.MQEnum;
 
@@ -23,6 +24,8 @@ public class MessagePublisherSpringTemplate {
 	private static final Logger logger = LoggerFactory
 			.getLogger(MessagePublisherSpringTemplate.class);
 
+	//默认路由关键字
+	private final String DEFAULT_ROUTING_KEY = "";
 	@Inject
 	private RabbitTemplate rabbitTemplate;
 
@@ -58,15 +61,20 @@ public class MessagePublisherSpringTemplate {
 
 		final String messageId = UUID.randomUUID().toString();
 
+		String routingKey = null;
+		
+		if(StringUtils.isEmpty(type.getRoutingKey())){
+			routingKey = DEFAULT_ROUTING_KEY;
+		}else{
+			routingKey = type.getRoutingKey();
+		}
 		this.rabbitTemplate.convertAndSend(type.getExchange(),
-				type.getRoutingKey(), messageBody, new MessagePostProcessor() {
+				routingKey, messageBody, new MessagePostProcessor() {
 
 					@Override
 					public Message postProcessMessage(Message message)
 							throws AmqpException {
-
 						message.getMessageProperties().setMessageId(messageId);
-						message.getMessageProperties().setType(type.toString());
 						return message;
 					}
 

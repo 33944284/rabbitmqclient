@@ -4,12 +4,14 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import cn.com.sinosure.mq.MQEnum;
+import cn.com.sinosure.mq.config.MQPropertiesResolver;
 import cn.com.sinosure.mq.connection.SingleConnectionFactory;
 
 public class MessagePublisherFactory {
 
 	private static Map<MQEnum, MessagePublisher> messagePublisherMap = new ConcurrentHashMap<MQEnum, MessagePublisher>();
 
+	private static Map<String,SingleConnectionFactory> conFactoryMap = new ConcurrentHashMap<String,SingleConnectionFactory>();
 	/**
 	 * 创建消息发送器
 	 * 
@@ -22,12 +24,25 @@ public class MessagePublisherFactory {
 		if (messagePublisherMap.containsKey(businessType)) {
 			return messagePublisherMap.get(businessType);
 		}
-		SingleConnectionFactory conFactory = new SingleConnectionFactory(
-				businessType);
-		conFactory.setHost("10.1.95.144");
-		conFactory.setPort(5670);
+				
+		SingleConnectionFactory conFactory = null;
+		
+		if(conFactoryMap.containsKey(businessType.getVhost()+businessType.getUser())){
+			conFactory = conFactoryMap.get(businessType.getVhost()+businessType.getUser());
+		}
+		
+		if(conFactory == null){
+			conFactory = new SingleConnectionFactory(businessType.getVhost(),businessType.getUser(),businessType.getPassword());
+			
+			conFactory.setHost(MQPropertiesResolver.getMQHost());
+			
+			conFactory.setPort(Integer.valueOf(MQPropertiesResolver.getMQPort()));
+			
+			conFactoryMap.put(businessType.getVhost()+businessType.getUser(), conFactory);
+		}
+		
 		messagePublisherMap.put(businessType, new DefaultMessagePublisher(
-				businessType, conFactory));
+				businessType, conFactoryMap.get(businessType.getVhost()+businessType.getUser())));
 
 		return messagePublisherMap.get(businessType);
 	}

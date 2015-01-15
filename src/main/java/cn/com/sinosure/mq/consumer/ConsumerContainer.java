@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -12,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cn.com.sinosure.mq.MQEnum;
+import cn.com.sinosure.mq.config.MQPropertiesResolver;
 import cn.com.sinosure.mq.connection.ConnectionListener;
 import cn.com.sinosure.mq.connection.SingleConnectionFactory;
 
@@ -35,6 +38,8 @@ public class ConsumerContainer {
 			.getLogger(ConsumerContainer.class);
 	private static final int DEFAULT_AMOUNT_OF_INSTANCES = 1;
 
+	private  Map<String,SingleConnectionFactory> conFactoryMap = new ConcurrentHashMap<String,SingleConnectionFactory>();
+	
 	ConnectionFactory connectionFactory;
 	List<ConsumerHolder> consumerHolders = Collections
 			.synchronizedList(new LinkedList<ConsumerHolder>());
@@ -50,14 +55,9 @@ public class ConsumerContainer {
 	 * @param connectionFactory
 	 *            The connection factory
 	 */
-	public ConsumerContainer(ConnectionFactory connectionFactory) {
-		super();
-		this.connectionFactory = connectionFactory;
-		if (connectionFactory instanceof SingleConnectionFactory) {
-			ContainerConnectionListener connectionListener = new ContainerConnectionListener();
-			((SingleConnectionFactory) connectionFactory)
-					.registerListener(connectionListener);
-		}
+	public ConsumerContainer() {
+//		super();
+		
 	}
 
 	/**
@@ -70,148 +70,17 @@ public class ConsumerContainer {
 	 * @param queue
 	 *            The queue to bind the consume to
 	 */
-	public void addConsumer(Consumer consumer, String queue) {
-		addConsumer(consumer, new ConsumerConfiguration(queue),
-				DEFAULT_AMOUNT_OF_INSTANCES);
+
+
+	
+	public void addConsumer(Consumer consumer, MQEnum... businessTypes  ) {
+		for(MQEnum businessType : businessTypes){
+			this.createConnectionFactory(businessType);
+			addConsumer(consumer,businessType, new ConsumerConfiguration(businessType.getTargetQueue()),DEFAULT_AMOUNT_OF_INSTANCES);
+		}
 	}
 
 	
-	public void addConsumer(Consumer consumer, MQEnum  businessType) {
-		addConsumer(consumer, new ConsumerConfiguration(businessType.getTargetQueue()),
-				DEFAULT_AMOUNT_OF_INSTANCES);
-	}
-	
-	/**
-	 * Adds a consumer to the container, binds it to the given queue and sets
-	 * whether the consumer auto acknowledge or not. Does NOT enable the
-	 * consumer to consume from the message broker until the container is
-	 * started.
-	 * 
-	 * @param consumer
-	 *            The consumer
-	 * @param queue
-	 *            The queue to bind the consume to
-	 * @param autoAck
-	 *            whether the consumer shall auto ack or not
-	 */
-	public void addConsumer(Consumer consumer, String queue, boolean autoAck) {
-		addConsumer(consumer, new ConsumerConfiguration(queue, autoAck),
-				DEFAULT_AMOUNT_OF_INSTANCES);
-	}
-
-	/**
-	 * <p>
-	 * Adds a consumer to the container, binds it to the given queue with auto
-	 * acknowledge disabled. Does NOT enable the consumer to consume from the
-	 * message broker until the container is started.
-	 * </p>
-	 * 
-	 * <p>
-	 * Registers the same consumer N times at the queue according to the number
-	 * of specified instances. Use this for scaling your consumers locally. Be
-	 * aware that the consumer implementation must be stateless or thread safe.
-	 * </p>
-	 * 
-	 * @param consumer
-	 *            The consumer
-	 * @param queue
-	 *            The queue to bind the consume to
-	 * @param prefetchMessageCount
-	 *            The number of message the client keep in buffer before
-	 *            processing them.
-	 * @param instances
-	 *            the amount of consumer instances
-	 */
-	public void addConsumer(Consumer consumer, String queue,
-			int prefetchMessageCount, int instances) {
-		addConsumer(consumer, new ConsumerConfiguration(queue,
-				prefetchMessageCount), instances);
-	}
-
-	/**
-	 * <p>
-	 * Adds a consumer to the container, binds it to the given queue with auto
-	 * acknowledge disabled. Does NOT enable the consumer to consume from the
-	 * message broker until the container is started.
-	 * </p>
-	 * 
-	 * <p>
-	 * Registers the same consumer N times at the queue according to the number
-	 * of specified instances. Use this for scaling your consumers locally. Be
-	 * aware that the consumer implementation must be stateless or thread safe.
-	 * </p>
-	 * 
-	 * @param consumer
-	 *            The consumer
-	 * @param queue
-	 *            The queue to bind the consume to
-	 * @param instances
-	 *            the amount of consumer instances
-	 */
-	public void addConsumer(Consumer consumer, String queue, int instances) {
-		addConsumer(consumer, new ConsumerConfiguration(queue), instances);
-	}
-
-	/**
-	 * <p>
-	 * Adds a consumer to the container, binds it to the given queue and sets
-	 * whether the consumer auto acknowledge or not. Does NOT enable the
-	 * consumer to consume from the message broker until the container is
-	 * started.
-	 * </p>
-	 * 
-	 * <p>
-	 * Registers the same consumer N times at the queue according to the number
-	 * of specified instances. Use this for scaling your consumers locally. Be
-	 * aware that the consumer implementation must be stateless or thread safe.
-	 * </p>
-	 * 
-	 * @param consumer
-	 *            The consumer
-	 * @param queue
-	 *            The queue to bind the consume to
-	 * @param autoAck
-	 *            whether the consumer shall auto ack or not
-	 * @param prefetchMessageCount
-	 *            The number of message the client keep in buffer before
-	 *            processing them.
-	 * @param instances
-	 *            the amount of consumer instances
-	 */
-	public void addConsumer(Consumer consumer, String queue, boolean autoAck,
-			int prefetchMessageCount, int instances) {
-		addConsumer(consumer, new ConsumerConfiguration(queue, autoAck,
-				prefetchMessageCount), instances);
-	}
-
-	/**
-	 * <p>
-	 * Adds a consumer to the container, binds it to the given queue and sets
-	 * whether the consumer auto acknowledge or not. Does NOT enable the
-	 * consumer to consume from the message broker until the container is
-	 * started.
-	 * </p>
-	 * 
-	 * <p>
-	 * Registers the same consumer N times at the queue according to the number
-	 * of specified instances. Use this for scaling your consumers locally. Be
-	 * aware that the consumer implementation must be stateless or thread safe.
-	 * </p>
-	 * 
-	 * @param consumer
-	 *            The consumer
-	 * @param queue
-	 *            The queue to bind the consume to
-	 * @param autoAck
-	 *            whether the consumer shall auto ack or not
-	 * @param instances
-	 *            the amount of consumer instances
-	 */
-	public void addConsumer(Consumer consumer, String queue, boolean autoAck,
-			int instances) {
-		addConsumer(consumer, new ConsumerConfiguration(queue, autoAck),
-				instances);
-	}
 
 	/**
 	 * Adds a consumer to the container and configures it according to the
@@ -231,11 +100,11 @@ public class ConsumerContainer {
 	 * @param instances
 	 *            the amount of consumer instances
 	 */
-	public synchronized void addConsumer(Consumer consumer,
+	public synchronized void addConsumer(Consumer consumer,MQEnum type,
 			ConsumerConfiguration configuration, int instances) {
 		for (int i = 0; i < instances; i++) {
 			this.consumerHolders
-					.add(new ConsumerHolder(consumer, configuration));
+					.add(new ConsumerHolder(consumer, configuration,type));
 		}
 	}
 
@@ -532,8 +401,10 @@ public class ConsumerContainer {
 	 */
 	protected void checkPreconditions(List<ConsumerHolder> consumerHolders)
 			throws IOException {
-		Channel channel = createChannel();
+		
+		
 		for (ConsumerHolder consumerHolder : consumerHolders) {
+			Channel channel = createChannel(consumerHolder.getType());
 			String queue = consumerHolder.getConfiguration().getQueueName();
 			try {
 				channel.queueDeclarePassive(queue);
@@ -542,10 +413,29 @@ public class ConsumerContainer {
 				LOGGER.error("Queue {} not found on broker", queue);
 				throw e;
 			}
+			channel.close();
 		}
-		channel.close();
+		
 	}
 
+	protected void createConnectionFactory(MQEnum businessType)  {
+		SingleConnectionFactory conFactory = null;
+		if(conFactoryMap.containsKey(businessType.getVhost()+businessType.getUser())){
+			conFactory = (SingleConnectionFactory) conFactoryMap.get(businessType.getVhost()+businessType.getUser());
+		}
+		
+		if(conFactory == null){
+			conFactory = new SingleConnectionFactory(businessType.getVhost(),businessType.getUser(),businessType.getPassword());
+			
+			conFactory.setHost(MQPropertiesResolver.getMQHost());
+			
+			conFactory.setPort(Integer.valueOf(MQPropertiesResolver.getMQPort()));
+			
+			conFactoryMap.put(businessType.getVhost()+businessType.getUser(), conFactory);
+		}
+		
+	}
+	
 	/**
 	 * Creates a channel to be used for consuming from the broker.
 	 * 
@@ -553,9 +443,9 @@ public class ConsumerContainer {
 	 * @throws IOException
 	 *             if the channel cannot be created due to a connection problem
 	 */
-	protected Channel createChannel() throws IOException {
+	protected Channel createChannel(MQEnum type) throws IOException {
 		LOGGER.debug("Creating channel");
-		Connection connection = connectionFactory.newConnection();
+		Connection connection = conFactoryMap.get(type).newConnection();
 		Channel channel = connection.createChannel();
 		LOGGER.debug("Created channel");
 		return channel;
@@ -643,11 +533,16 @@ public class ConsumerContainer {
 		ConsumerConfiguration configuration;
 		ShutdownListener channelShutdownListener;
 
+		MQEnum type;
+		public MQEnum getType() {
+			return type;
+		}
+
 		boolean enabled = false;
 		boolean active = false;
 
 		public ConsumerHolder(Consumer consumer,
-				ConsumerConfiguration configuration) {
+				ConsumerConfiguration configuration,MQEnum type) {
 			this.consumer = consumer;
 			this.configuration = configuration;
 			if (consumer instanceof ManagedConsumer) {
@@ -712,7 +607,7 @@ public class ConsumerContainer {
 			}
 			// Start the consumer
 			try {
-				channel = createChannel();
+				channel = createChannel(type);
 				if (consumer instanceof ManagedConsumer) {
 					((ManagedConsumer) consumer).setChannel(channel);
 				}

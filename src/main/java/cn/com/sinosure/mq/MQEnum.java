@@ -1,18 +1,22 @@
 package cn.com.sinosure.mq;
 
 
-public enum MQEnum {
+public class MQEnum {
+//
+//	EDOC2BIZ("EDOC-BIZ", "EDOC-BIZ", "EDOC-BIZ", "EDOC-BIZ", "EDOC-BIZ",""),
+//	
+//	QUOTA2EDOC("QUOTA-EDOC", "QUOTA-EDOC", "QUOTA-EDOC", "QUOTA-EDOC", "QUOTA-EDOC",""), 
+//	
+//	DMC2BIZ("DMC-BIZ", "DMC-BIZ", "DMC-BIZ", "DMC-BIZ", "DMC-BIZ",""), 
+//	
+//	EDOC2RBAC("EDOC-RBAC", "edoc-rbac", "edoc-rbac", "EDOC-RBAC", "EDOC-RBAC","edoc2rbac"), 
+//	
+//	MASTERDATA2ALL("MASTER-ALL","MASTER-ALL", "MASTER-ALL", "MASTER-ALL", "MASTER-ALL","");
+//	
+////	MASTERDATA2EDOC("MASTER-ALL","MASTER-ALL", "MASTER-ALL", "MASTER-ALL", "MASTER-ALL","master2edoc");
+////	
+////	MASTERDATA2EDOC("MASTER-ALL","MASTER-ALL", "MASTER-ALL", "MASTER-ALL", "MASTER-ALL","master2edoc");
 
-	EDOC2BIZ("EDOC-BIZ", "EDOC-BIZ", "EDOC-BIZ", "EDOC-BIZ", "EDOC-BIZ",""),
-	
-	QUOTA2EDOC("QUOTA-EDOC", "QUOTA-EDOC", "QUOTA-EDOC", "QUOTA-EDOC", "QUOTA-EDOC",""), 
-	
-	DMC2BIZ("DMC-BIZ", "DMC-BIZ", "DMC-BIZ", "DMC-BIZ", "DMC-BIZ",""), 
-	
-	EDOC2RBAC("EDOC-RBAC", "edoc-rbac", "edoc-rbac", "EDOC-RBAC", "EDOC-RBAC","edoc2rbac"), 
-	
-	MASTERDATA2ALL("MASTER-ALL","MASTER-ALL", "MASTER-ALL", "MASTER-ALL", "MASTER-ALL","");
-	
 	public String getVhost() {
 		return vhost;
 	}
@@ -64,15 +68,8 @@ public enum MQEnum {
 		return targetQueue;
 	}
 
-	public static String getHost() {
-		return "10.1.95.144";
-	}
 
-	public static int getPort() {
-		return 5670;
-	}
-
-	MQEnum(String vhost, String user, String password, String exchange,
+	public MQEnum(String vhost, String user, String password, String exchange,
 			String routingKey,String targetQueue) {
 		this.vhost = vhost;
 		this.user = user;
@@ -80,5 +77,9 @@ public enum MQEnum {
 		this.exchange = exchange;
 		this.routingKey = routingKey;
 		this.targetQueue = targetQueue;
+	}
+	
+	public MQEnum(){
+		
 	}
 }
