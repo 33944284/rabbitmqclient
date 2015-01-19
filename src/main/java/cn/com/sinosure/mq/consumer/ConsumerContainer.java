@@ -2,10 +2,11 @@ package cn.com.sinosure.mq.consumer;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Map.Entry;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -14,13 +15,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cn.com.sinosure.mq.MQEnum;
-import cn.com.sinosure.mq.config.MQPropertiesResolver;
 import cn.com.sinosure.mq.connection.ConnectionListener;
+import cn.com.sinosure.mq.connection.RabbitConnectionFactoryUtil;
 import cn.com.sinosure.mq.connection.SingleConnectionFactory;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.ShutdownListener;
 
@@ -38,9 +38,9 @@ public class ConsumerContainer {
 			.getLogger(ConsumerContainer.class);
 	private static final int DEFAULT_AMOUNT_OF_INSTANCES = 1;
 
-	private  Map<String,SingleConnectionFactory> conFactoryMap = new ConcurrentHashMap<String,SingleConnectionFactory>();
+//	private  Map<String,SingleConnectionFactory> conFactoryMap = new ConcurrentHashMap<String,SingleConnectionFactory>();
 	
-	ConnectionFactory connectionFactory;
+//	ConnectionFactory connectionFactory;
 	List<ConsumerHolder> consumerHolders = Collections
 			.synchronizedList(new LinkedList<ConsumerHolder>());
 
@@ -72,10 +72,21 @@ public class ConsumerContainer {
 	 */
 
 
+	public void addConsumer(Consumer consumer, MQEnum businessType,int instances ) {
+		addConsumer(consumer,businessType, new ConsumerConfiguration(businessType.getTargetQueue()),instances);
+	}
+	
+	
+	public void addConsumer(Consumer consumer, Map<MQEnum,Integer> instanceMap ) {
+		Iterator<Entry<MQEnum,Integer>> iterator = instanceMap.entrySet().iterator();
+		while(iterator.hasNext()){
+			Entry<MQEnum,Integer> entry = iterator.next();
+			addConsumer(consumer,entry.getKey(), new ConsumerConfiguration(entry.getKey().getTargetQueue()),entry.getValue());
+		}
+	}
 	
 	public void addConsumer(Consumer consumer, MQEnum... businessTypes  ) {
 		for(MQEnum businessType : businessTypes){
-			this.createConnectionFactory(businessType);
 			addConsumer(consumer,businessType, new ConsumerConfiguration(businessType.getTargetQueue()),DEFAULT_AMOUNT_OF_INSTANCES);
 		}
 	}
@@ -418,23 +429,7 @@ public class ConsumerContainer {
 		
 	}
 
-	protected void createConnectionFactory(MQEnum businessType)  {
-		SingleConnectionFactory conFactory = null;
-		if(conFactoryMap.containsKey(businessType.getVhost()+businessType.getUser())){
-			conFactory = (SingleConnectionFactory) conFactoryMap.get(businessType.getVhost()+businessType.getUser());
-		}
-		
-		if(conFactory == null){
-			conFactory = new SingleConnectionFactory(businessType.getVhost(),businessType.getUser(),businessType.getPassword());
-			
-			conFactory.setHost(MQPropertiesResolver.getMQHost());
-			
-			conFactory.setPort(Integer.valueOf(MQPropertiesResolver.getMQPort()));
-			
-			conFactoryMap.put(businessType.getVhost()+businessType.getUser(), conFactory);
-		}
-		
-	}
+	
 	
 	/**
 	 * Creates a channel to be used for consuming from the broker.
@@ -443,9 +438,11 @@ public class ConsumerContainer {
 	 * @throws IOException
 	 *             if the channel cannot be created due to a connection problem
 	 */
-	protected Channel createChannel(MQEnum type) throws IOException {
+	protected Channel createChannel(MQEnum businessType) throws IOException {
 		LOGGER.debug("Creating channel");
-		Connection connection = conFactoryMap.get(type).newConnection();
+		SingleConnectionFactory conFactory = RabbitConnectionFactoryUtil.getConnectionFactory(businessType.getVhost(), businessType.getUser(), businessType.getPassword());
+
+		Connection connection = conFactory.newConnection();
 		Channel channel = connection.createChannel();
 		LOGGER.debug("Created channel");
 		return channel;
@@ -545,6 +542,7 @@ public class ConsumerContainer {
 				ConsumerConfiguration configuration,MQEnum type) {
 			this.consumer = consumer;
 			this.configuration = configuration;
+			this.type = type;
 			if (consumer instanceof ManagedConsumer) {
 				((ManagedConsumer) consumer).setConfiguration(configuration);
 			}

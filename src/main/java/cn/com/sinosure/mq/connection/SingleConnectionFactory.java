@@ -71,8 +71,10 @@ public class SingleConnectionFactory extends ConnectionFactory {
 		connectionShutdownListener = new ConnectionShutDownListener();
 	}
 
-	public SingleConnectionFactory(String vhost,String user,String password) {
+	public SingleConnectionFactory(String host,Integer port,String vhost,String user,String password) {
 		this();
+		super.setHost(host);
+		super.setPort(port);
 		this.vhost = vhost;
 		this.user = user;
 		this.password = password;
