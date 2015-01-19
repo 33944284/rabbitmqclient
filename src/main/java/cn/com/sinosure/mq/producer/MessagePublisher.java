@@ -30,6 +30,5 @@ public interface MessagePublisher {
 	
 	void sendMessage(String routingKey,Object messageBody) throws MQException;
 	
-//	void sendMessageWithConfirm(String exchange,String routingKey,Object messageBody) throws MQException;
 
 }
