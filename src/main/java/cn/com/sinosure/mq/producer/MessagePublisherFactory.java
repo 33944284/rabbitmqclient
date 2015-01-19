@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import cn.com.sinosure.mq.MQEnum;
+import cn.com.sinosure.mq.config.MQPropertiesResolver;
 import cn.com.sinosure.mq.connection.RabbitConnectionFactoryUtil;
 import cn.com.sinosure.mq.connection.SingleConnectionFactory;
 
@@ -32,4 +33,14 @@ public class MessagePublisherFactory {
 		return messagePublisherMap.get(businessType);
 	}
 
+	/**
+	 * 
+	 * @param key: rabbit.edoc-biz
+	 * @return
+	 */
+	public static synchronized MessagePublisher getMessagePublisher(
+			String key) {
+		MQEnum mqEnum = MQPropertiesResolver.getMQProperties(key);
+		return getMessagePublisher(mqEnum);
+	}
 }

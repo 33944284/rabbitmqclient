@@ -3,6 +3,7 @@ package cn.com.sinosure.mq.connection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import cn.com.sinosure.mq.MQEnum;
 import cn.com.sinosure.mq.config.MQPropertiesResolver;
 
 public class RabbitConnectionFactoryUtil {
@@ -22,5 +23,11 @@ public class RabbitConnectionFactoryUtil {
 			conFactoryMap.put(vhost+user, conFactory);
 		}
 		return conFactory;
+	}
+	
+	public static SingleConnectionFactory getConnectionFactory(String key){
+		
+		MQEnum mqEnum = MQPropertiesResolver.getMQProperties(key);
+		return getConnectionFactory(mqEnum.getVhost(),mqEnum.getUser(),mqEnum.getPassword());
 	}
 }

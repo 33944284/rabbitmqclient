@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cn.com.sinosure.mq.MQEnum;
+import cn.com.sinosure.mq.config.MQPropertiesResolver;
 import cn.com.sinosure.mq.connection.ConnectionListener;
 import cn.com.sinosure.mq.connection.RabbitConnectionFactoryUtil;
 import cn.com.sinosure.mq.connection.SingleConnectionFactory;
@@ -76,6 +77,21 @@ public class ConsumerContainer {
 		addConsumer(consumer,businessType, new ConsumerConfiguration(businessType.getTargetQueue()),instances);
 	}
 	
+	public void addConsumer(Consumer consumer, String businessKey,int instances ) {
+		MQEnum businessType = MQPropertiesResolver.getMQProperties(businessKey);
+		addConsumer(consumer,businessType, new ConsumerConfiguration(businessType.getTargetQueue()),instances);
+	}
+	
+	public void addConsumer(Consumer consumer, String businessKey ) {
+		MQEnum businessType = MQPropertiesResolver.getMQProperties(businessKey);
+		addConsumer(consumer,businessType, new ConsumerConfiguration(businessType.getTargetQueue()),DEFAULT_AMOUNT_OF_INSTANCES);
+	}
+	
+	public void addConsumer(Consumer consumer, String... businessKeys ) {
+		for(String businessKey : businessKeys){
+			this.addConsumer(consumer, businessKey);
+		}
+	}
 	
 	public void addConsumer(Consumer consumer, Map<MQEnum,Integer> instanceMap ) {
 		Iterator<Entry<MQEnum,Integer>> iterator = instanceMap.entrySet().iterator();
