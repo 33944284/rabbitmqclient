@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import cn.com.sinosure.mq.MQEnum;
 import cn.com.sinosure.mq.config.MQPropertiesResolver;
-import cn.com.sinosure.mq.connection.RabbitConnectionFactoryUtil;
+import cn.com.sinosure.mq.connection.RabbitConnectionFactory;
 import cn.com.sinosure.mq.connection.SingleConnectionFactory;
 
 public class MessagePublisherFactory {
@@ -25,7 +25,7 @@ public class MessagePublisherFactory {
 			return messagePublisherMap.get(businessType);
 		}
 				
-		SingleConnectionFactory conFactory = RabbitConnectionFactoryUtil.getConnectionFactory(businessType.getVhost(), businessType.getUser(), businessType.getPassword());
+		SingleConnectionFactory conFactory = RabbitConnectionFactory.getConnectionFactory(businessType.getVhost(), businessType.getUser(), businessType.getPassword());
 		
 		messagePublisherMap.put(businessType, new DefaultMessagePublisher(
 				businessType,conFactory));

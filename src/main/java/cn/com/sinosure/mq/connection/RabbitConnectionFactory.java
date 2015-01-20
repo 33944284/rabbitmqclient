@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import cn.com.sinosure.mq.MQEnum;
 import cn.com.sinosure.mq.config.MQPropertiesResolver;
 
-public class RabbitConnectionFactoryUtil {
+public class RabbitConnectionFactory {
 
 	private static Map<String,SingleConnectionFactory> conFactoryMap = new ConcurrentHashMap<String,SingleConnectionFactory>();
 

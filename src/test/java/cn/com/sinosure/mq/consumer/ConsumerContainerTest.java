@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import cn.com.sinosure.mq.MQEnum;
 import cn.com.sinosure.mq.config.MQPropertiesResolver;
-import cn.com.sinosure.mq.connection.RabbitConnectionFactoryUtil;
+import cn.com.sinosure.mq.connection.RabbitConnectionFactory;
 import cn.com.sinosure.mq.connection.SingleConnectionFactory;
 import cn.com.sinosure.mq.producer.MessagePublisher;
 import cn.com.sinosure.mq.producer.MessagePublisherFactory;
@@ -47,7 +47,7 @@ public class ConsumerContainerTest {
     @Test
     public void shouldReturnSameConnection() throws Exception {
     	
-        SingleConnectionFactory connectionFactory = RabbitConnectionFactoryUtil.getConnectionFactory(key);
+        SingleConnectionFactory connectionFactory = RabbitConnectionFactory.getConnectionFactory(key);
     	Connection connectionOne = connectionFactory.newConnection();
         Connection connectionTwo = connectionFactory.newConnection();
         Assert.assertTrue(connectionOne == connectionTwo);

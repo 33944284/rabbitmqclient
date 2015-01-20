@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import cn.com.sinosure.mq.MQEnum;
 import cn.com.sinosure.mq.config.MQPropertiesResolver;
 import cn.com.sinosure.mq.connection.ConnectionListener;
-import cn.com.sinosure.mq.connection.RabbitConnectionFactoryUtil;
+import cn.com.sinosure.mq.connection.RabbitConnectionFactory;
 import cn.com.sinosure.mq.connection.SingleConnectionFactory;
 
 import com.rabbitmq.client.Channel;
@@ -456,7 +456,7 @@ public class ConsumerContainer {
 	 */
 	protected Channel createChannel(MQEnum businessType) throws IOException {
 		LOGGER.debug("Creating channel");
-		SingleConnectionFactory conFactory = RabbitConnectionFactoryUtil.getConnectionFactory(businessType.getVhost(), businessType.getUser(), businessType.getPassword());
+		SingleConnectionFactory conFactory = RabbitConnectionFactory.getConnectionFactory(businessType.getVhost(), businessType.getUser(), businessType.getPassword());
 
 		Connection connection = conFactory.newConnection();
 		Channel channel = connection.createChannel();
