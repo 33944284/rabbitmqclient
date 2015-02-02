@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -39,7 +40,7 @@ public class ConsumerContainer {
 			.getLogger(ConsumerContainer.class);
 	private static final int DEFAULT_AMOUNT_OF_INSTANCES = 1;
 
-//	private  Map<String,SingleConnectionFactory> conFactoryMap = new ConcurrentHashMap<String,SingleConnectionFactory>();
+	private  Map<SingleConnectionFactory,ConnectionListener> conFactoryMap = new ConcurrentHashMap<SingleConnectionFactory,ConnectionListener>();
 	
 //	ConnectionFactory connectionFactory;
 	List<ConsumerHolder> consumerHolders = Collections
@@ -457,7 +458,12 @@ public class ConsumerContainer {
 	protected Channel createChannel(MQEnum businessType) throws IOException {
 		LOGGER.debug("Creating channel");
 		SingleConnectionFactory conFactory = RabbitConnectionFactory.getConnectionFactory(businessType.getVhost(), businessType.getUser(), businessType.getPassword());
-
+		if(!conFactoryMap.containsKey(conFactory)){
+			SingleConnectionListener singleListener = new SingleConnectionListener();
+			conFactory.registerListener(singleListener);
+			conFactoryMap.put(conFactory, singleListener);
+		}
+		
 		Connection connection = conFactory.newConnection();
 		Channel channel = connection.createChannel();
 		LOGGER.debug("Created channel");
@@ -471,7 +477,7 @@ public class ConsumerContainer {
 	 * @author christian.bick
 	 * 
 	 */
-	protected class ContainerConnectionListener implements ConnectionListener {
+	protected class SingleConnectionListener implements ConnectionListener {
 
 		@Override
 		public void onConnectionEstablished(Connection connection) {
