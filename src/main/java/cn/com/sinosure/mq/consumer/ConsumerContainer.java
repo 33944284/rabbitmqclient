@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,15 +36,15 @@ public class ConsumerContainer {
 
 	private static final Logger LOGGER = LoggerFactory
 			.getLogger(ConsumerContainer.class);
+
 	private static final int DEFAULT_AMOUNT_OF_INSTANCES = 1;
 
 	private  Map<SingleConnectionFactory,ConnectionListener> conFactoryMap = new ConcurrentHashMap<SingleConnectionFactory,ConnectionListener>();
 	
-//	ConnectionFactory connectionFactory;
+	Map<MQEnum, List<ConsumerHolder>> consumerHoldersMap = new ConcurrentHashMap<MQEnum, List<ConsumerHolder>>();
+	
 	List<ConsumerHolder> consumerHolders = Collections
 			.synchronizedList(new LinkedList<ConsumerHolder>());
-
-	private volatile Executor executor = Executors.newCachedThreadPool();
 
 	private final Object activationMonitor = new Object();
 
@@ -74,7 +72,7 @@ public class ConsumerContainer {
 	 */
 
 
-	public void addConsumer(Consumer consumer, MQEnum businessType,int instances ) {
+	private void addConsumer(Consumer consumer, MQEnum businessType,int instances ) {
 		addConsumer(consumer,businessType, new ConsumerConfiguration(businessType.getTargetQueue()),instances);
 	}
 	
@@ -94,7 +92,7 @@ public class ConsumerContainer {
 		}
 	}
 	
-	public void addConsumer(Consumer consumer, Map<MQEnum,Integer> instanceMap ) {
+	private void addConsumer(Consumer consumer, Map<MQEnum,Integer> instanceMap ) {
 		Iterator<Entry<MQEnum,Integer>> iterator = instanceMap.entrySet().iterator();
 		while(iterator.hasNext()){
 			Entry<MQEnum,Integer> entry = iterator.next();
@@ -102,7 +100,7 @@ public class ConsumerContainer {
 		}
 	}
 	
-	public void addConsumer(Consumer consumer, MQEnum... businessTypes  ) {
+	private void addConsumer(Consumer consumer, MQEnum... businessTypes  ) {
 		for(MQEnum businessType : businessTypes){
 			addConsumer(consumer,businessType, new ConsumerConfiguration(businessType.getTargetQueue()),DEFAULT_AMOUNT_OF_INSTANCES);
 		}
@@ -128,11 +126,13 @@ public class ConsumerContainer {
 	 * @param instances
 	 *            the amount of consumer instances
 	 */
-	public synchronized void addConsumer(Consumer consumer,MQEnum type,
+	private synchronized void addConsumer(Consumer consumer,MQEnum type,
 			ConsumerConfiguration configuration, int instances) {
 		for (int i = 0; i < instances; i++) {
+			ConsumerHolder consumerHolder = new ConsumerHolder(consumer, configuration,type);
 			this.consumerHolders
-					.add(new ConsumerHolder(consumer, configuration,type));
+					.add(consumerHolder);
+			consumerHoldersMap.get(type).add(consumerHolder);
 		}
 	}
 
@@ -149,7 +149,7 @@ public class ConsumerContainer {
 	 * @throws IOException
 	 *             if a consumer registration at the message broker fails
 	 */
-	public synchronized void startConsumers(
+	private synchronized void startConsumers(
 			Class<? extends Consumer> consumerClass) throws IOException {
 		List<ConsumerHolder> consumerHolderSubList = filterConsumersForClass(consumerClass);
 		enableConsumers(consumerHolderSubList);
@@ -182,7 +182,7 @@ public class ConsumerContainer {
 	 * @param consumerClass
 	 *            The consumer class or interface
 	 */
-	public synchronized void stopConsumers(
+	private synchronized void stopConsumers(
 			Class<? extends Consumer> consumerClass) {
 		List<ConsumerHolder> consumerHolderSubList = filterConsumersForClass(consumerClass);
 		disableConsumers(consumerHolderSubList);
@@ -225,7 +225,7 @@ public class ConsumerContainer {
 	 * @return The list of enabled consumers
 	 */
 	public List<ConsumerHolder> getEnabledConsumers() {
-		return filterConsumersForEnabledFlag(true);
+		return filterConsumersForEnabledFlag(true,null);
 	}
 
 	/**
@@ -243,7 +243,7 @@ public class ConsumerContainer {
 	 * @return The list of disabled consumers.
 	 */
 	public List<ConsumerHolder> getDisabledConsumers() {
-		return filterConsumersForEnabledFlag(false);
+		return filterConsumersForEnabledFlag(false,null);
 	}
 
 	/**
@@ -318,11 +318,13 @@ public class ConsumerContainer {
 	 *            Whether to filter for enabled or disabled consumers
 	 * @return The filtered consumers
 	 */
-	protected List<ConsumerHolder> filterConsumersForEnabledFlag(boolean enabled) {
+	protected List<ConsumerHolder> filterConsumersForEnabledFlag(boolean enabled,MQEnum type) {
 		List<ConsumerHolder> consumerHolderSubList = new LinkedList<ConsumerHolder>();
 		for (ConsumerHolder consumerHolder : consumerHolders) {
-			if (consumerHolder.isEnabled() == enabled) {
-				consumerHolderSubList.add(consumerHolder);
+			if (consumerHolder.isEnabled() == enabled ) {
+				if(type == null || (type!=null && consumerHolder.getType() == type)){
+					consumerHolderSubList.add(consumerHolder);
+				}
 			}
 		}
 		return consumerHolderSubList;
@@ -459,7 +461,7 @@ public class ConsumerContainer {
 		LOGGER.debug("Creating channel");
 		SingleConnectionFactory conFactory = RabbitConnectionFactory.getConnectionFactory(businessType.getVhost(), businessType.getUser(), businessType.getPassword());
 		if(!conFactoryMap.containsKey(conFactory)){
-			SingleConnectionListener singleListener = new SingleConnectionListener();
+			SingleConnectionListener singleListener = new SingleConnectionListener(businessType);
 			conFactory.registerListener(singleListener);
 			conFactoryMap.put(conFactory, singleListener);
 		}
@@ -479,11 +481,16 @@ public class ConsumerContainer {
 	 */
 	protected class SingleConnectionListener implements ConnectionListener {
 
+		private MQEnum type;
+		
+		SingleConnectionListener(MQEnum type){
+			this.type = type;
+		}
 		@Override
 		public void onConnectionEstablished(Connection connection) {
 			String hostName = connection.getAddress().getHostName();
 			LOGGER.info("Connection established to {}", hostName);
-			List<ConsumerHolder> enabledConsumerHolders = filterConsumersForEnabledFlag(true);
+			List<ConsumerHolder> enabledConsumerHolders = filterConsumersForEnabledFlag(true,type);
 			LOGGER.info("Activating {} enabled consumers",
 					enabledConsumerHolders.size());
 			try {
@@ -499,7 +506,7 @@ public class ConsumerContainer {
 		public void onConnectionLost(Connection connection) {
 			LOGGER.warn("Connection lost");
 			LOGGER.info("Deactivating enabled consumers");
-			List<ConsumerHolder> enabledConsumerHolders = filterConsumersForEnabledFlag(true);
+			List<ConsumerHolder> enabledConsumerHolders = filterConsumersForEnabledFlag(true,type);
 			deactivateConsumers(enabledConsumerHolders);
 		}
 
@@ -507,7 +514,7 @@ public class ConsumerContainer {
 		public void onConnectionClosed(Connection connection) {
 			LOGGER.warn("Connection closed for ever");
 			LOGGER.info("Deactivating enabled consumers");
-			List<ConsumerHolder> enabledConsumerHolders = filterConsumersForEnabledFlag(true);
+			List<ConsumerHolder> enabledConsumerHolders = filterConsumersForEnabledFlag(true,type);
 			deactivateConsumers(enabledConsumerHolders);
 		}
 	}

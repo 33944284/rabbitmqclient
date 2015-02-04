@@ -6,7 +6,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import cn.com.sinosure.mq.MQEnum;
+import cn.com.sinosure.mq.producer.DefaultMessagePublisher;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -14,6 +18,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class MQPropertiesResolver {
 	
+	
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(MQPropertiesResolver.class);
+
 	private static Map<String,MQEnum> mqEnumMap = new HashMap<String,MQEnum>();
 	
 	private static Properties properties = new Properties() ;
@@ -40,14 +48,11 @@ public class MQPropertiesResolver {
 			type  = objectMapper.readValue(value, MQEnum.class);
 
 		} catch (JsonParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.error("解析配置文件时出现错误", e);
 		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.error("解析配置文件时出现错误", e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.error("解析配置文件时出现错误", e);
 		}
 		mqEnumMap.put(key, type);
 		return mqEnumMap.get(key);
@@ -58,8 +63,7 @@ public class MQPropertiesResolver {
 			try {
 				loadConfig();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				LOGGER.error("解析配置文件时出现错误", e);
 			}
 		}
 		return properties.getProperty("rabbit.host");
@@ -70,8 +74,7 @@ public class MQPropertiesResolver {
 			try {
 				loadConfig();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				LOGGER.error("解析配置文件时出现错误", e);
 			}
 		}
 		return properties.getProperty("rabbit.port");
