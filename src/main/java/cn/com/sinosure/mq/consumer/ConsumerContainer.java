@@ -132,8 +132,15 @@ public class ConsumerContainer {
 			ConsumerHolder consumerHolder = new ConsumerHolder(consumer, configuration,type);
 			this.consumerHolders
 					.add(consumerHolder);
+			if(!consumerHoldersMap.containsKey(type)){
+				List<ConsumerHolder> list =  Collections
+						.synchronizedList(new LinkedList<ConsumerHolder>());
+
+				consumerHoldersMap.put(type, list);
+			}
 			consumerHoldersMap.get(type).add(consumerHolder);
 		}
+		
 	}
 
 	/**
