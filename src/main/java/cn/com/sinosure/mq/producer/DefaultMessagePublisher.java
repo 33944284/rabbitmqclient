@@ -14,6 +14,7 @@ import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.MessageProperties;
 
 public class DefaultMessagePublisher implements MessagePublisher {
 
@@ -60,7 +61,8 @@ public class DefaultMessagePublisher implements MessagePublisher {
 		String messageJson = objectMapper.writeValueAsString(messageBody);
 
 		BasicProperties.Builder propsBuilder = new BasicProperties().builder()
-				.contentType(businessType.toString())//  
+				.contentType(businessType.toString())// 
+				.deliveryMode(MessageProperties.PERSISTENT_TEXT_PLAIN.getDeliveryMode())//持久化消息
 				.messageId(UUID.randomUUID().toString());// 
 
 		if(routingKey == null || routingKey.equals("") || routingKey.equals("null") ){
@@ -69,7 +71,7 @@ public class DefaultMessagePublisher implements MessagePublisher {
 		
 		channel.basicPublish(businessType.getExchange(),
 				routingKey, propsBuilder.build(),
-				messageJson.getBytes());
+				messageJson.getBytes("UTF-8"));
 
 	}
 	

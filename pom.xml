@@ -110,7 +110,13 @@
 			<version>${log4j2.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.3</version>
 
+			<scope>provided</scope>
+		</dependency>
 
 	</dependencies>
 
@@ -185,17 +191,14 @@
 
 	</build>
 
-	<repositories>
+	<distributionManagement>
 		<repository>
-			<id>nexus-sinosure</id>
-			<name>Nexus sinosure</name>
-			<url>http://mvnrepo.sinosure.com.cn/nexus/content/groups/public/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
+			<id>sinosure-release</id>
+			<url>http://mvnrepo.sinosure.com.cn/nexus/content/repositories/sinosure-release</url>
 		</repository>
-	</repositories>
+		<snapshotRepository>
+			<id>sinosure-snapshots</id>
+			<url>http://mvnrepo.sinosure.com.cn/nexus/content/repositories/sinosure-snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
 </project>

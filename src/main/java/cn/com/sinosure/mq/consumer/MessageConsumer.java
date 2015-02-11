@@ -86,7 +86,7 @@ public abstract class MessageConsumer extends ConsumerContainer.ManagedConsumer 
 						"Consumer {}: Message {} could not be handled due to an exception during message processing",
 						new Object[] { consumerTag, envelope.getDeliveryTag(),
 								t });
-				getChannel().basicNack(envelope.getDeliveryTag(), false, false);
+				getChannel().basicNack(envelope.getDeliveryTag(), false, true);
 				LOGGER.warn("Consumer {}: Nacked message {}", new Object[] {
 						consumerTag, envelope.getDeliveryTag(), t });
 			}

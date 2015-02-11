@@ -3,7 +3,7 @@ package cn.com.sinosure.mq.consumer;
  
 public class ConsumerConfiguration {
 
-	public static final int UNLIMITED_PREFETCH_MESSAGE_COUNT = 0;
+	public static final int UNLIMITED_PREFETCH_MESSAGE_COUNT = 1;
 
 	private String queueName;
 	private boolean autoAck = false;

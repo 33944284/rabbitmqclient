@@ -12,7 +12,8 @@ public class DefaultMessageHandler extends MessageConsumer {
 		byte[] body = message.getBody();
 		String bodyJSONStr = objectMapper.readValue(body, String.class);
 
-		System.out.println("json Str ===" + bodyJSONStr);
+		throw new IOException("aaaa");
+//		System.out.println("json Str ===" + bodyJSONStr);
 	}
 
 }
