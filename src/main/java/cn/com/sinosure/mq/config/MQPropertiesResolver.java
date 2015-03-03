@@ -45,8 +45,10 @@ public class MQPropertiesResolver {
 				loadConfig();
 			}
 			String value = (String) properties.get(key);
+			
 			type  = objectMapper.readValue(value, MQEnum.class);
 
+			type.setRabbitKey(key);
 		} catch (JsonParseException e) {
 			LOGGER.error("解析配置文件时出现错误", e);
 		} catch (JsonMappingException e) {

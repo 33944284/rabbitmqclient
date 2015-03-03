@@ -5,6 +5,8 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cn.com.sinosure.mq.log.RabbitLOG;
+
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Envelope;
 import com.rabbitmq.client.ShutdownSignalException;
@@ -80,6 +82,8 @@ public abstract class MessageConsumer extends ConsumerContainer.ManagedConsumer 
 			LOGGER.info("Consumer {}: Received message {}", consumerTag,
 					envelope.getDeliveryTag());
 			handleMessage(message);
+			RabbitLOG.log(properties.getContentType(), properties.getMessageId(), true, "consume succes");
+
 		} catch (Throwable t) {
 			if (!getConfiguration().isAutoAck()) {
 				LOGGER.error(
@@ -89,6 +93,8 @@ public abstract class MessageConsumer extends ConsumerContainer.ManagedConsumer 
 				getChannel().basicNack(envelope.getDeliveryTag(), false, true);
 				LOGGER.warn("Consumer {}: Nacked message {}", new Object[] {
 						consumerTag, envelope.getDeliveryTag(), t });
+				RabbitLOG.log(properties.getContentType(), properties.getMessageId(), true, "consume failure");
+
 			}
 			return;
 		}

@@ -94,11 +94,11 @@ public class ConsumerContainerTest {
     public void shouldReceiveAllMessages() throws Exception {
        
         MessageConsumer consumer1 = new DefaultMessageHandler();
-        MessageConsumer consumer2 = new DefaultMessageHandler();
-        MessageConsumer consumer3 = new DefaultMessageHandler();
+//        MessageConsumer consumer2 = new DefaultMessageHandler();
+//        MessageConsumer consumer3 = new DefaultMessageHandler();
         ConsumerContainer consumerContainer = prepareConsumerContainer(consumer1,key, 1);
-        consumerContainer.addConsumer(consumer2, key);
-        consumerContainer.addConsumer(consumer3,key);
+//        consumerContainer.addConsumer(consumer2, key);
+//        consumerContainer.addConsumer(consumer3,key);
         //        ConsumerContainer consumerContainer = prepareConsumerContainer(consumer2, "edoc2rbac", 1000);
         consumerContainer.startAllConsumers();
 //        Thread.sleep(1000);

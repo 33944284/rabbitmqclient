@@ -25,6 +25,8 @@ public interface MessagePublisher {
 	 * @throws MQException
 	 */
 	void sendMessageWithConfirm(Object messageBody) throws MQException;
+	
+	
 
 	void sendMessage(Object messageBody) throws MQException;
 	

@@ -10,10 +10,10 @@ public class DefaultMessageHandler extends MessageConsumer {
 
 	public void handleMessage(AmqpMessage message) throws IOException {
 		byte[] body = message.getBody();
-		String bodyJSONStr = objectMapper.readValue(body, String.class);
+		String bodyJSONStr = (String) objectMapper.readValue(body, String.class);
 
-		throw new IOException("aaaa");
-//		System.out.println("json Str ===" + bodyJSONStr);
+//		throw new IOException("aaaa");
+		System.out.println("json Str ===" + bodyJSONStr);
 	}
 
 }

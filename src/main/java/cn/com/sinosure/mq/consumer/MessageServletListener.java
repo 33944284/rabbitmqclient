@@ -24,6 +24,9 @@ public class MessageServletListener implements ServletContextListener {
 
 	@Override
 	public void contextInitialized(ServletContextEvent arg0) {
+		
+		
+		
 		String key1 = "rabbit.pageTrack";//配置文件里的定义字段
 		ConsumerContainer consumerContainer = new ConsumerContainer();
 		if(consumerMap.isEmpty()){

@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import cn.com.sinosure.mq.MQException;
 import cn.com.sinosure.mq.MQEnum;
+import cn.com.sinosure.mq.log.RabbitLOG;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.AMQP.BasicProperties;
@@ -55,16 +56,19 @@ public class DefaultMessagePublisher implements MessagePublisher {
 		this.sendMessage(businessType.getRoutingKey(), messageBody);
 	}
 
-	private void sendMessage(String routingKey,Object messageBody, Channel channel)
+	private String sendMessage(String routingKey,Object messageBody, Channel channel)
 			throws IOException {
 	
 		String messageJson = objectMapper.writeValueAsString(messageBody);
 
+		String messageId = UUID.randomUUID().toString();
+		
 		BasicProperties.Builder propsBuilder = new BasicProperties().builder()
-				.contentType(businessType.toString())// 
+				.contentType(businessType.getRabbitKey())// 
 				.deliveryMode(MessageProperties.PERSISTENT_TEXT_PLAIN.getDeliveryMode())//持久化消息
-				.messageId(UUID.randomUUID().toString());// 
+				.messageId(messageId);// 
 
+		
 		if(routingKey == null || routingKey.equals("") || routingKey.equals("null") ){
 			routingKey = DEFAULT_ROUTING_KEY;
 		}
@@ -73,16 +77,17 @@ public class DefaultMessagePublisher implements MessagePublisher {
 				routingKey, propsBuilder.build(),
 				messageJson.getBytes("UTF-8"));
 
+		return messageId;
 	}
 	
 	
 
 
 	protected Channel createChannel() throws IOException {
-		LOGGER.debug("Creating channel");
+		LOGGER.info("Creating channel");
 		Connection connection = this.conFactory.newConnection();
 		Channel channel = connection.createChannel();
-		LOGGER.debug("Created channel");
+		LOGGER.info("Created channel"+channel.getChannelNumber());
 		return channel;
 	}
 
@@ -93,9 +98,11 @@ public class DefaultMessagePublisher implements MessagePublisher {
 		try {
 			channel = this.createChannel();
 			channel.confirmSelect();
-			this.sendMessage(routingKey,messageBody);
+			String messageId = this.sendMessage(routingKey,messageBody,channel);
 			channel.waitForConfirmsOrDie();
+			RabbitLOG.log(this.businessType.getRabbitKey(), messageId, true, messageBody);
 		} catch (InterruptedException e) {
+			RabbitLOG.log(this.businessType.getRabbitKey(), "", false, messageBody);
 			throw new MQException("发送后,等待确认消息时报错", e);
 		} catch (IOException e) {
 			throw new MQException("发送前，设置confirm监听器时出错", e);
@@ -113,11 +120,15 @@ public class DefaultMessagePublisher implements MessagePublisher {
 	@Override
 	public void sendMessage(String routingKey, Object messageBody)
 			throws MQException {
+		
+
 		Channel channel = null;
 		try {
 			channel = this.createChannel();
-			this.sendMessage(routingKey,messageBody, channel);
+			String messageId  = this.sendMessage(routingKey,messageBody, channel);
+			RabbitLOG.log(this.businessType.getRabbitKey(), messageId, true, messageBody);
 		} catch (IOException e) {
+			RabbitLOG.log(this.businessType.getRabbitKey(), "", false, messageBody);
 			throw new MQException("发送消息时出现错误", e);
 		} finally {
 			try {

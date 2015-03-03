@@ -64,6 +64,16 @@ public class MQEnum {
 	private String routingKey;
 	private String targetQueue;
 	
+	private String rabbitKey;
+	
+	public String getRabbitKey() {
+		return rabbitKey;
+	}
+
+	public void setRabbitKey(String rabbitKey) {
+		this.rabbitKey = rabbitKey;
+	}
+
 	public String getTargetQueue() {
 		return targetQueue;
 	}

@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import cn.com.sinosure.mq.MQEnum;
 
+import com.rabbitmq.client.Address;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.ShutdownListener;
@@ -261,7 +262,23 @@ public class SingleConnectionFactory extends ConnectionFactory {
 				LOGGER.info("ACL Has seted :" + getVirtualHost());
 				LOGGER.info("Trying to establish connection to {}:{}",
 						getHost(), getPort());
-				connection = super.newConnection(executorService);
+				Address[] addrs ;
+				String hosts = getHost();
+				String[] hostArray = null;
+				if(hosts.contains(",")){
+					hostArray = hosts.split(",");
+				}
+				if(hostArray!=null){
+					addrs = new Address[hostArray.length];
+					for(int i=0;i<hostArray.length;i++){
+						addrs[i] = new Address(hostArray[i],getPort());
+					}
+				}else{
+					addrs = new Address[1];
+					addrs[0] = new Address(hosts,getPort());
+				}
+					
+				connection = super.newConnection(executorService,addrs);
 				connection.addShutdownListener(connectionShutdownListener);
 				LOGGER.info("Established connection to {}:{}", getHost(),
 						getPort());
