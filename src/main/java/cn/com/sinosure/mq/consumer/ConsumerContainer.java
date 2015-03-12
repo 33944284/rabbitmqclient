@@ -92,6 +92,12 @@ public class ConsumerContainer {
 		}
 	}
 	
+	
+	public void addConsumer(MessageConsumer consumer){
+		String businessKey = consumer.getRabbitKey();
+		this.addConsumer(consumer, businessKey);
+	}
+	
 	private void addConsumer(Consumer consumer, Map<MQEnum,Integer> instanceMap ) {
 		Iterator<Entry<MQEnum,Integer>> iterator = instanceMap.entrySet().iterator();
 		while(iterator.hasNext()){

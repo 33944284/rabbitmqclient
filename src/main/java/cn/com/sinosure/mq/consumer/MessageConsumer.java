@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import cn.com.sinosure.mq.log.RabbitLOG;
 
@@ -135,5 +136,11 @@ public abstract class MessageConsumer extends ConsumerContainer.ManagedConsumer 
 	 *            The delivered message
 	 */
 	public abstract void handleMessage(AmqpMessage message) throws Throwable;
+
+	/**
+	 * 返回消息key;配置文件指定rabbit.pageTrack等
+	 * @return 
+	 */
+	public abstract String getRabbitKey();
 
 }
