@@ -14,6 +14,7 @@ import cn.com.sinosure.mq.MQEnum;
 import cn.com.sinosure.mq.config.MQPropertiesResolver;
 import cn.com.sinosure.mq.connection.RabbitConnectionFactory;
 import cn.com.sinosure.mq.connection.SingleConnectionFactory;
+import cn.com.sinosure.mq.demo.DefaultMessageHandler;
 import cn.com.sinosure.mq.producer.MessagePublisher;
 import cn.com.sinosure.mq.producer.MessagePublisherFactory;
 
@@ -100,7 +101,7 @@ public class ConsumerContainerTest {
 //        consumerContainer.addConsumer(consumer2, key);
 //        consumerContainer.addConsumer(consumer3,key);
         //        ConsumerContainer consumerContainer = prepareConsumerContainer(consumer2, "edoc2rbac", 1000);
-        consumerContainer.startAllConsumers();
+//        consumerContainer.startAllConsumers();
 //        Thread.sleep(1000);
         for (int i=1; i<=MESSAGE_AMOUNT; i++) {
            
