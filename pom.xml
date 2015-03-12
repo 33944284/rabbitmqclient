@@ -19,12 +19,6 @@
 	<dependencies>
 
 		<dependency>
-  			<groupId>org.apache.camel</groupId>
-  			<artifactId>camel-rabbitmq</artifactId>
-  			<version>2.12.2</version>
-		</dependency>
-		
-		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
 			<version>2.4.2</version>
@@ -37,10 +31,11 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>org.springframework.amqp</groupId>
-			<artifactId>spring-rabbit</artifactId>
-			<version>1.4.0.RELEASE</version>
-		</dependency>
+      		<groupId>org.springframework</groupId>
+      		<artifactId>spring-web</artifactId>
+    	    <version>${spring.version}</version>
+         	<scope>provided</scope>
+         </dependency>
 		
 		 <dependency>
             <groupId>org.springframework</groupId>
@@ -48,6 +43,13 @@
             <version>${spring.version}</version>
         </dependency>
 
+		<dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+ 		
  		<dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
