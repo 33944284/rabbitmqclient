@@ -97,14 +97,14 @@ public class ConsumerContainerTest {
         MessageConsumer consumer1 = new DefaultMessageHandler();
 //        MessageConsumer consumer2 = new DefaultMessageHandler();
 //        MessageConsumer consumer3 = new DefaultMessageHandler();
-        ConsumerContainer consumerContainer = prepareConsumerContainer(consumer1,key, 1);
+//        ConsumerContainer consumerContainer = prepareConsumerContainer(consumer1,key, 1);
 //        consumerContainer.addConsumer(consumer2, key);
 //        consumerContainer.addConsumer(consumer3,key);
         //        ConsumerContainer consumerContainer = prepareConsumerContainer(consumer2, "edoc2rbac", 1000);
 //        consumerContainer.startAllConsumers();
 //        Thread.sleep(1000);
         for (int i=1; i<=MESSAGE_AMOUNT; i++) {
-           
+//           
             publisher.sendMessage(i);
         }
         // Sleep depending on the amount of messages sent but at least 100 ms, and at most 1 sec

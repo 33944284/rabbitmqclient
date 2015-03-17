@@ -7,7 +7,7 @@ import javax.servlet.annotation.WebListener;
 
 import cn.com.sinosure.mq.utils.web.MessageConsumeListener;
 
-@WebListener
+//@WebListener
 public class EDOC2BIZMessageListener extends MessageConsumeListener {
 
 	@Override

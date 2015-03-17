@@ -52,6 +52,7 @@ public abstract class MessageConsumeListener implements ServletContextListener {
 			LOGGER.error("启动消息消费者时出错", e);
 		}
 	}
+	
 	/**
 	 * spring bean的名称列表
 	 * @return
