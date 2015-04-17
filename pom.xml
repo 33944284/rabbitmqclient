@@ -5,8 +5,7 @@
 	<artifactId>mq-client</artifactId>
 	<version>${version.value}-${profiles.active}${version.status}</version>
 	<properties>
-<!--  			<version.value>20150204</version.value> -->
-<!--  			<version.status></version.status> -->
+
         <version.value>0.0.1</version.value>
         <version.status>-SNAPSHOT</version.status>
     
@@ -180,33 +179,60 @@
 
 	</profiles>
 
-	<build>
-		<finalName>mq-client</finalName>
 
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-					
-				</configuration>
-			</plugin>
+ <build>
+        <finalName>mq-client</finalName>
 
+        <resources>
+            <resource>
+                <directory>src/main/config/${profiles.active}</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.xml</include>
+                    <include>**/*.properties</include>
+                </includes>
+                 <targetPath>cn/com/sinosure/mq/config/</targetPath>
+            </resource>
+        </resources>
 
-		</plugins>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                   
+                </configuration>
+            </plugin>
 
+           
+        </plugins>
+    </build>
 
-	</build>
+ <repositories>
+        <repository>
+            <id>nexus-sinosure</id>
+            <name>Nexus sinosure</name>
+            <url>http://mvnrepo.sinosure.com.cn/nexus/content/groups/public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 
-	<distributionManagement>
-		<repository>
-			<id>sinosure-release</id>
-			<url>http://mvnrepo.sinosure.com.cn/nexus/content/repositories/sinosure-release</url>
-		</repository>
-		<snapshotRepository>
-			<id>sinosure-snapshots</id>
-			<url>http://mvnrepo.sinosure.com.cn/nexus/content/repositories/sinosure-snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
+    <distributionManagement>
+        <repository>
+            <id>sinosure-release</id>
+            <url>http://mvnrepo.sinosure.com.cn/nexus/content/repositories/sinosure-release</url>
+        </repository>
+        <snapshotRepository>
+            <id>sinosure-snapshots</id>
+            <url>http://mvnrepo.sinosure.com.cn/nexus/content/repositories/sinosure-snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>

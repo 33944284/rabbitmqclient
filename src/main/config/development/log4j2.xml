@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="GBK"?>
+<configuration status="OFF">
+
+    <Properties>
+        <Property name="rabbitMQPattern">%d{yyyy-MM-dd HH:mm:ss.SSS}|%t|%-5level|%logger{36}|%msg%n</Property>
+        <Property name="rabbitLogLocation">./MQLogs</Property>
+    </Properties>
+
+    <appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout charset="GBK" pattern="${rabbitMQPattern}" />
+        </Console>
+        <RollingFile name="RF-rabbit" fileName="${rabbitLogLocation}/rabbit.log"
+            filePattern="${rabbitLogLocation}/rabbit-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout charset="GBK" pattern="${rabbitMQPattern}" />
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+        </RollingFile>
+        <RollingFile name="RF-system" fileName="${rabbitLogLocation}/system.log"
+            filePattern="${rabbitLogLocation}/system-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout charset="GBK" pattern="${rabbitMQPattern}" />
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+        </RollingFile>
+    </appenders>
+
+    <loggers>
+        <root level="debug">
+            <appender-ref ref="Console" />
+        </root>
+
+        <logger name="rabbit" level="info" additivity="false">
+            <appender-ref ref="RF-rabbit" />
+        </logger>
+        <logger name="system" level="info" additivity="false">
+            <appender-ref ref="RF-system" />
+        </logger>
+
+        
+    </loggers>
+
+</configuration>

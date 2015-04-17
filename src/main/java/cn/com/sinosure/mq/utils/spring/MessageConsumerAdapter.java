@@ -22,8 +22,8 @@ public abstract class MessageConsumerAdapter extends MessageConsumer implements 
 	public void afterPropertiesSet() throws Exception {
 		// TODO Auto-generated method stub
 		consumerContainerAdapter.addConsumer(this);
+//		System.out.println("添加消费者至容器内"+this.toString());
 		LOGGER.info("添加消费者至容器内"+this.toString());
-//		System.out.println(consumerContainer.getInactiveConsumers());
 	}
 
 	

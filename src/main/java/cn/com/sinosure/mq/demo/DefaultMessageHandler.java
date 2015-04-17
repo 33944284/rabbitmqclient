@@ -13,7 +13,7 @@ public class DefaultMessageHandler extends MessageConsumerAdapter {
 	
 	public void handleMessage(AmqpMessage message) throws IOException {
 
-		String bodyJSONStr = (String) message.getMessageBodyObject(String.class);
+		TrackPageLog bodyJSONStr =  message.getMessageBodyObject(TrackPageLog.class);
 
 		System.out.println("json Str ===" + bodyJSONStr);
 	}
@@ -21,7 +21,7 @@ public class DefaultMessageHandler extends MessageConsumerAdapter {
 	
 	public String getRabbitKey() {
 		// TODO Auto-generated method stub
-		return "rabbit.edoc-biz";
+		return "rabbit.pageTrack";
 	}
 
 }
