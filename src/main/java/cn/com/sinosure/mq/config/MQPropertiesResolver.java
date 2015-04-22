@@ -36,20 +36,22 @@ public class MQPropertiesResolver {
 	private static void loadConfig() throws IOException{
 		
 		InputStream inputStream = MQPropertiesResolver.class.getClassLoader().getResourceAsStream(location);
-		properties.load(inputStream);
 		
-		if(inputStream == null){
-			inputStream = MQPropertiesResolver.class.getClassLoader().getResourceAsStream("WEB-INF/"+location);
+		if(inputStream!=null){
+			properties.load(inputStream);
 		}
 		
 		if(inputStream == null){
 			String path = MQPropertiesResolver.class.getResource("/").getPath();
 			LOGGER.debug("path1==="+path);
-			path = path.substring(1,path.indexOf("classes"));
+			path = path.substring(0,path.indexOf("classes"));
 			LOGGER.debug("path2==="+path);
-			properties.load(new FileInputStream(path+location));
+			inputStream = new FileInputStream(path+location);
+			
 		}
-
+		if(inputStream!=null){
+			properties.load(inputStream);
+		}
 		LOGGER.debug("properties1=="+properties.toString());
 		//加载目标主机，将从客户端收回到mq端统一管理
 		inputStream  = MQPropertiesResolver.class.getResourceAsStream(host_location);
