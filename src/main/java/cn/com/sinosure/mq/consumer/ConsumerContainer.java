@@ -501,6 +501,7 @@ public class ConsumerContainer {
 		}
 		@Override
 		public void onConnectionEstablished(Connection connection) {
+			LOGGER.info("onConnectionEstablished type=="+type);
 			String hostName = connection.getAddress().getHostName();
 			LOGGER.info("Connection established to {}", hostName);
 			List<ConsumerHolder> enabledConsumerHolders = filterConsumersForEnabledFlag(true,type);
@@ -517,7 +518,8 @@ public class ConsumerContainer {
 
 		@Override
 		public void onConnectionLost(Connection connection) {
-			LOGGER.warn("Connection lost");
+			LOGGER.info("Lost type=="+type);
+			LOGGER.error("Connection lost");
 			LOGGER.info("Deactivating enabled consumers");
 			List<ConsumerHolder> enabledConsumerHolders = filterConsumersForEnabledFlag(true,type);
 			deactivateConsumers(enabledConsumerHolders);
@@ -525,39 +527,15 @@ public class ConsumerContainer {
 
 		@Override
 		public void onConnectionClosed(Connection connection) {
-			LOGGER.warn("Connection closed for ever");
+			LOGGER.info("close type=="+type);
+			LOGGER.error("Connection closed for ever");
 			LOGGER.info("Deactivating enabled consumers");
 			List<ConsumerHolder> enabledConsumerHolders = filterConsumersForEnabledFlag(true,type);
 			deactivateConsumers(enabledConsumerHolders);
 		}
 	}
 
-	private class AsyncMessageProcessingConsumer implements Runnable {
-
-		private final ConsumerHolder consumerHolder;
-
-		private final CountDownLatch start;
-
-		public AsyncMessageProcessingConsumer(ConsumerHolder consumerHolder) {
-			this.consumerHolder = consumerHolder;
-			this.start = new CountDownLatch(1);
-		}
-
-		@Override
-		public void run() {
-
-			try {
-				this.consumerHolder.enable();
-				this.start.countDown();
-				System.out.println("thread==" + Thread.currentThread().getId());
-			} catch (IOException e) {
-				LOGGER.error("Consumer thread Throwable, thread Throwable.", e);
-			} finally {
-				this.start.countDown();
-			}
-		}
-
-	}
+	
 
 	/**
 	 * A holder of a consumer attaching additional state to the consumer.

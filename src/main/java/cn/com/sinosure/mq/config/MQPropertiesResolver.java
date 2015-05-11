@@ -43,16 +43,16 @@ public class MQPropertiesResolver {
 		
 		if(inputStream == null){
 			String path = MQPropertiesResolver.class.getResource("/").getPath();
-			LOGGER.debug("path1==="+path);
+			LOGGER.info("path1==="+path);
 			path = path.substring(0,path.indexOf("classes"));
-			LOGGER.debug("path2==="+path);
+			LOGGER.info("path2==="+path);
 			inputStream = new FileInputStream(path+location);
 			
 		}
 		if(inputStream!=null){
 			properties.load(inputStream);
 		}
-		LOGGER.debug("properties1=="+properties.toString());
+		LOGGER.info("properties1=="+properties.toString());
 		//加载目标主机，将从客户端收回到mq端统一管理
 		inputStream  = MQPropertiesResolver.class.getResourceAsStream(host_location);
 		properties.load(inputStream);
@@ -68,7 +68,7 @@ public class MQPropertiesResolver {
 			if(properties.isEmpty()){
 				loadConfig();
 			}
-			System.out.println("rabbit.key=="+key);
+			LOGGER.info("rabbit.key=="+key);
 			String value = (String) properties.get(key);
 			
 			type  = objectMapper.readValue(value, MQEnum.class);

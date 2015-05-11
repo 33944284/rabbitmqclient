@@ -47,7 +47,7 @@ public class SingleConnectionFactory extends ConnectionFactory {
 	private static final Logger LOGGER = LoggerFactory
 			.getLogger(SingleConnectionFactory.class);
 
-	public static final int CONNECTION_HEARTBEAT_IN_SEC = 3;
+	public static final int CONNECTION_HEARTBEAT_IN_SEC = 10;
 	public static final int CONNECTION_TIMEOUT_IN_MS = 1000;
 	public static final int CONNECTION_ESTABLISH_INTERVAL_IN_MS = 500;
 
@@ -221,7 +221,7 @@ public class SingleConnectionFactory extends ConnectionFactory {
 	 * Notifies all connection listener about a state change.
 	 */
 	void notifyListenersOnStateChange() {
-		LOGGER.debug("Notifying connection listeners about state change to {}",
+		LOGGER.info("Notifying connection listeners about state change to {}",
 				state);
 
 		for (ConnectionListener listener : connectionListeners) {
@@ -313,6 +313,9 @@ public class SingleConnectionFactory extends ConnectionFactory {
 				return;
 			}
 
+			LOGGER.error("begin error:"+cause.getMessage());
+			
+			LOGGER.error("end error:");
 			synchronized (operationOnConnectionMonitor) {
 				// No action to be taken if factory is already closed
 				// or already connecting

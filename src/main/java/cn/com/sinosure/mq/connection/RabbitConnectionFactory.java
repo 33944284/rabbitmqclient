@@ -10,7 +10,7 @@ public class RabbitConnectionFactory {
 
 	private static Map<String,SingleConnectionFactory> conFactoryMap = new ConcurrentHashMap<String,SingleConnectionFactory>();
 
-	public static SingleConnectionFactory getConnectionFactory(String vhost,String user,String password){
+	public synchronized static SingleConnectionFactory getConnectionFactory(String vhost,String user,String password){
 		
 		SingleConnectionFactory conFactory = null;
 		
@@ -25,7 +25,7 @@ public class RabbitConnectionFactory {
 		return conFactory;
 	}
 	
-	public static SingleConnectionFactory getConnectionFactory(String key){
+	public synchronized static SingleConnectionFactory getConnectionFactory(String key){
 		
 		MQEnum mqEnum = MQPropertiesResolver.getMQProperties(key);
 		return getConnectionFactory(mqEnum.getVhost(),mqEnum.getUser(),mqEnum.getPassword());
