@@ -1,17 +1,19 @@
 package cn.com.sinosure.mq.connection;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 import javax.annotation.PreDestroy;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import cn.com.sinosure.mq.MQEnum;
 
 import com.rabbitmq.client.Address;
 import com.rabbitmq.client.Connection;
@@ -67,18 +69,35 @@ public class SingleConnectionFactory extends ConnectionFactory {
 		super();
 		setRequestedHeartbeat(CONNECTION_HEARTBEAT_IN_SEC);
 		setConnectionTimeout(CONNECTION_TIMEOUT_IN_MS);
+		setClientProperties(buildClientProperty());
 		connectionListeners = Collections
 				.synchronizedList(new LinkedList<ConnectionListener>());
 		connectionShutdownListener = new ConnectionShutDownListener();
 	}
 
-	public SingleConnectionFactory(String host,Integer port,String vhost,String user,String password) {
+	public SingleConnectionFactory(String host, Integer port, String vhost,
+			String user, String password) {
 		this();
 		super.setHost(host);
 		super.setPort(port);
 		this.vhost = vhost;
 		this.user = user;
 		this.password = password;
+	}
+
+	private Map<String,Object> buildClientProperty(){
+		Map<String,Object> properties = new HashMap<String,Object>();
+		InetAddress addr = null;
+		try {
+			addr = InetAddress.getLocalHost();
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		properties.put("ip",addr == null ? "" : addr.getHostAddress().toString());
+		properties.put("hostName",addr == null ? "" : addr.getHostName().toString());
+		properties.put("instance", System.getProperty("weblogic.Name") == null ? ""	: System.getProperty("weblogic.Name"));
+		return properties;
 	}
 
 	/**
@@ -262,23 +281,23 @@ public class SingleConnectionFactory extends ConnectionFactory {
 				LOGGER.info("ACL Has seted :" + getVirtualHost());
 				LOGGER.info("Trying to establish connection to {}:{}",
 						getHost(), getPort());
-				Address[] addrs ;
+				Address[] addrs;
 				String hosts = getHost();
 				String[] hostArray = null;
-				if(hosts.contains(",")){
+				if (hosts.contains(",")) {
 					hostArray = hosts.split(",");
 				}
-				if(hostArray!=null){
+				if (hostArray != null) {
 					addrs = new Address[hostArray.length];
-					for(int i=0;i<hostArray.length;i++){
-						addrs[i] = new Address(hostArray[i],getPort());
+					for (int i = 0; i < hostArray.length; i++) {
+						addrs[i] = new Address(hostArray[i], getPort());
 					}
-				}else{
+				} else {
 					addrs = new Address[1];
-					addrs[0] = new Address(hosts,getPort());
+					addrs[0] = new Address(hosts, getPort());
 				}
-					
-				connection = super.newConnection(executorService,addrs);
+
+				connection = super.newConnection(executorService, addrs);
 				connection.addShutdownListener(connectionShutdownListener);
 				LOGGER.info("Established connection to {}:{}", getHost(),
 						getPort());
@@ -313,8 +332,8 @@ public class SingleConnectionFactory extends ConnectionFactory {
 				return;
 			}
 
-			LOGGER.error("begin error:"+cause.getMessage());
-			
+			LOGGER.error("begin error:" + cause.getMessage());
+
 			LOGGER.error("end error:");
 			synchronized (operationOnConnectionMonitor) {
 				// No action to be taken if factory is already closed
