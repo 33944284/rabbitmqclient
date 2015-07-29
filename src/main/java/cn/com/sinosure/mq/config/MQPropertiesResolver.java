@@ -1,6 +1,8 @@
 package cn.com.sinosure.mq.config;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -28,31 +30,50 @@ public class MQPropertiesResolver {
 	
 	private static ObjectMapper objectMapper = new ObjectMapper();
 
-	private static final String location = "config-mq.properties";
+	private static final String CONFIG_FILE_DIR = "WEB-INF";
 
+	private static final String CONFIG_FILE_PREFIX = "config-mq";
+	
 	private static final String host_location = "host-mq.properties";
 
 	
 	private static void loadConfig() throws IOException{
 		
-		InputStream inputStream = MQPropertiesResolver.class.getClassLoader().getResourceAsStream(location);
 		
-		if(inputStream!=null){
-			properties.load(inputStream);
+		String path = MQPropertiesResolver.class.getResource("/").getPath();
+		path = path.substring(0,path.indexOf("classes"));
+		
+		
+		File sourceFileDir = new File(path);
+		
+		File[] configList =	sourceFileDir.listFiles(new FilenameFilter() {
+            
+            @Override
+            public boolean accept(File dir, String name) {
+                if(name.startsWith(CONFIG_FILE_PREFIX)){
+                   	return true;
+                }else{
+                	
+                	return false;
+                }
+            }
+        });
+		
+		if(configList == null || configList.length <= 0){
+			throw new IOException("没有找到config-mq开头的配置文件");
 		}
 		
-		if(inputStream == null){
-			String path = MQPropertiesResolver.class.getResource("/").getPath();
-			LOGGER.info("path1==="+path);
-			path = path.substring(0,path.indexOf("classes"));
-			LOGGER.info("path2==="+path);
-			inputStream = new FileInputStream(path+location);
-			
+		InputStream inputStream = null;
+		for(File file : configList){
+			inputStream = new FileInputStream(file);
+			if(inputStream!=null){
+				properties.load(inputStream);
+			}
 		}
-		if(inputStream!=null){
-			properties.load(inputStream);
-		}
+		
+		
 		LOGGER.info("properties1=="+properties.toString());
+		
 		//加载目标主机，将从客户端收回到mq端统一管理
 		inputStream  = MQPropertiesResolver.class.getResourceAsStream(host_location);
 		properties.load(inputStream);
@@ -109,6 +130,26 @@ public class MQPropertiesResolver {
 	
 	public static void main(String[] args){
 //		MQPropertiesResolver instance = new MQPropertiesResolver();
-		System.out.println("=="+MQPropertiesResolver.getMQProperties("rabbit.edoc-biz"));
+//		System.out.println("=="+MQPropertiesResolver.getMQProperties("rabbit.edoc-biz"));
+		
+		
+		File sourceFileDir = new File(CONFIG_FILE_DIR);
+		
+		File[] configList =	sourceFileDir.listFiles(new FilenameFilter() {
+            
+            @Override
+            public boolean accept(File dir, String name) {
+                if(name.startsWith(CONFIG_FILE_PREFIX)){
+                	System.out.println("===="+name);
+                	return true;
+                }else{
+                	System.out.println("false===="+name);
+
+                	return false;
+                }
+            }
+        });
+		
+		System.out.println(configList.length);
 	}
 }

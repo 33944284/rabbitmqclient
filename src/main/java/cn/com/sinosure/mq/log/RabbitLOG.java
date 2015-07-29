@@ -1,6 +1,5 @@
 package cn.com.sinosure.mq.log;
 
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -8,13 +7,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public final class RabbitLOG {
 
-	 private static final String RABBIT_LOGGER_NAME = "rabbit";
+	 private static final String RABBIT_LOGGER_NAME = "rabbitmq";
 
-	 private static final Logger systemLogger         = LoggerFactory.getLogger("system");
-	
-	 private static final Logger errorLogger          = LoggerFactory.getLogger("error");
-
-	 private static ObjectMapper mapper               = new ObjectMapper();
+     private static ObjectMapper mapper               = new ObjectMapper();
 	 
 	 
 	 public static void log(String rabbitKey,String messageId,boolean isOK,Object messageBody){
