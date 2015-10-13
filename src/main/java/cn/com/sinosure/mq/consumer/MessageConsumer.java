@@ -94,9 +94,12 @@ public abstract class MessageConsumer extends ConsumerContainer.ManagedConsumer 
 				getChannel().basicNack(envelope.getDeliveryTag(), false, true);
 				LOGGER.warn("Consumer {}: Nacked message {}", new Object[] {
 						consumerTag, envelope.getDeliveryTag(), t });
-				RabbitLOG.log(properties.getContentType(), properties.getMessageId(), true, "consume failure");
+//				RabbitLOG.log(properties.getContentType(), properties.getMessageId(), true, "consume failure");
 
 			}
+			
+			RabbitLOG.log(properties.getContentType(), properties.getMessageId(), true, "consume failure");
+
 			return;
 		}
 		if (!getConfiguration().isAutoAck()) {
@@ -143,4 +146,9 @@ public abstract class MessageConsumer extends ConsumerContainer.ManagedConsumer 
 	 */
 	public abstract String getRabbitKey();
 
+	/**
+	 * 是否自动回复消息成功接收
+	 * @return
+	 */
+	public abstract boolean isAutoAck();
 }

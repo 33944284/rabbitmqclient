@@ -41,9 +41,11 @@ public class MQPropertiesResolver {
 		
 		
 		String path = MQPropertiesResolver.class.getResource("/").getPath();
-		path = path.substring(0,path.indexOf("classes"));
-		
-		
+		LOGGER.info("path1=="+path.toString());
+		if(path.contains("WEB-INF")){
+			path = path.substring(0,path.indexOf("classes"));
+		}
+		LOGGER.info("path2=="+path.toString());
 		File sourceFileDir = new File(path);
 		
 		File[] configList =	sourceFileDir.listFiles(new FilenameFilter() {

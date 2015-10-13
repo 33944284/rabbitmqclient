@@ -56,34 +56,24 @@ public class ConsumerContainer {
 	 *            The connection factory
 	 */
 	public ConsumerContainer() {
-//		super();
 		
 	}
 
-	/**
-	 * Adds a consumer to the container and binds it to the given queue with
-	 * auto acknowledge disabled. Does NOT enable the consumer to consume from
-	 * the message broker until the container is started.
-	 * 
-	 * @param consumer
-	 *            The consumer
-	 * @param queue
-	 *            The queue to bind the consume to
-	 */
 
-
-	private void addConsumer(Consumer consumer, MQEnum businessType,int instances ) {
-		addConsumer(consumer,businessType, new ConsumerConfiguration(businessType.getTargetQueue()),instances);
-	}
-	
 	public void addConsumer(Consumer consumer, String businessKey,int instances ) {
 		MQEnum businessType = MQPropertiesResolver.getMQProperties(businessKey);
-		addConsumer(consumer,businessType, new ConsumerConfiguration(businessType.getTargetQueue()),instances);
+		addConsumer(consumer,businessType, new ConsumerConfiguration(businessType.getTargetQueue(),((MessageConsumer)consumer).isAutoAck()),instances);
 	}
+	
+	
 	
 	public void addConsumer(Consumer consumer, String businessKey ) {
 		MQEnum businessType = MQPropertiesResolver.getMQProperties(businessKey);
-		addConsumer(consumer,businessType, new ConsumerConfiguration(businessType.getTargetQueue()),DEFAULT_AMOUNT_OF_INSTANCES);
+		addConsumer(consumer,businessType, new ConsumerConfiguration(businessType.getTargetQueue(),((MessageConsumer)consumer).isAutoAck()),DEFAULT_AMOUNT_OF_INSTANCES);
+	}
+	
+	public void addConsumer(Consumer consumer, String businessKey, boolean isAutoAck ) {
+		addConsumer(consumer,  businessKey,   DEFAULT_AMOUNT_OF_INSTANCES );
 	}
 	
 	public void addConsumer(Consumer consumer, String... businessKeys ) {
@@ -98,19 +88,13 @@ public class ConsumerContainer {
 		this.addConsumer(consumer, businessKey);
 	}
 	
-	private void addConsumer(Consumer consumer, Map<MQEnum,Integer> instanceMap ) {
-		Iterator<Entry<MQEnum,Integer>> iterator = instanceMap.entrySet().iterator();
-		while(iterator.hasNext()){
-			Entry<MQEnum,Integer> entry = iterator.next();
-			addConsumer(consumer,entry.getKey(), new ConsumerConfiguration(entry.getKey().getTargetQueue()),entry.getValue());
-		}
+	
+	public void addConsumer(MessageConsumer consumer,boolean isAutoAck){
+		String businessKey = consumer.getRabbitKey();
+		this.addConsumer(consumer, businessKey,isAutoAck);
 	}
 	
-	private void addConsumer(Consumer consumer, MQEnum... businessTypes  ) {
-		for(MQEnum businessType : businessTypes){
-			addConsumer(consumer,businessType, new ConsumerConfiguration(businessType.getTargetQueue()),DEFAULT_AMOUNT_OF_INSTANCES);
-		}
-	}
+
 
 	
 

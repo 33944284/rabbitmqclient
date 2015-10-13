@@ -20,8 +20,13 @@ public class DefaultMessageHandler extends MessageConsumerAdapter {
 
 	
 	public String getRabbitKey() {
-		// TODO Auto-generated method stub
 		return "rabbit.pageTrack";
+	}
+
+
+	
+	public boolean isAutoAck() {
+		return false;
 	}
 
 }

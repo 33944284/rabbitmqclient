@@ -26,6 +26,7 @@ public class ConsumerContainerAdapater {
 		consumerContainer.addConsumer(consumer);
 	}
 	
+	
 	/**
 	 * 启动消费者
 	 * @throws IOException

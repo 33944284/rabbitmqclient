@@ -24,4 +24,10 @@ public class TrackMqMessageHandler extends MessageConsumerAdapter { // ע���
         return "rabbit.milTrackItem"; // �����ļ��������key
     }
 
+	
+	public boolean isAutoAck() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

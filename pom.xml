@@ -8,7 +8,7 @@
 
         <version.value>0.0.1</version.value>
         <version.status>-SNAPSHOT</version.status>
-<!--     	<version.value>20150814</version.value> -->
+<!--     	<version.value>20151013</version.value> -->
 <!--         <version.status></version.status> -->
     
 		<slf4j.version>1.7.7</slf4j.version>
@@ -190,8 +190,7 @@
                 <directory>src/main/config/${profiles.active}</directory>
                 <filtering>true</filtering>
                 <includes>
-                    <include>**/*.xml</include>
-                    <include>**/*.properties</include>
+                   <include>**/*.properties</include>
                 </includes>
                  <targetPath>cn/com/sinosure/mq/config/</targetPath>
             </resource>
