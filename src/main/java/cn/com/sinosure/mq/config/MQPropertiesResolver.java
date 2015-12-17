@@ -31,6 +31,8 @@ public class MQPropertiesResolver {
 	private static ObjectMapper objectMapper = new ObjectMapper();
 
 	private static final String CONFIG_FILE_DIR = "WEB-INF";
+	
+	private static final String CLASS_DIR = "classes";
 
 	private static final String CONFIG_FILE_PREFIX = "config-mq";
 	
@@ -42,8 +44,8 @@ public class MQPropertiesResolver {
 		
 		String path = MQPropertiesResolver.class.getResource("/").getPath();
 		LOGGER.info("path1=="+path.toString());
-		if(path.contains("WEB-INF")){
-			path = path.substring(0,path.indexOf("classes"));
+		if(path.contains(CONFIG_FILE_DIR)){
+			path = path.substring(0,path.indexOf(CLASS_DIR));
 		}
 		LOGGER.info("path2=="+path.toString());
 		File sourceFileDir = new File(path);
