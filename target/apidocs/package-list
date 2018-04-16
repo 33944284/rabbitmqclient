@@ -1,0 +1,11 @@
+cn.com.sinosure.mq
+cn.com.sinosure.mq.config
+cn.com.sinosure.mq.connection
+cn.com.sinosure.mq.consumer
+cn.com.sinosure.mq.consumer.register
+cn.com.sinosure.mq.demo
+cn.com.sinosure.mq.example
+cn.com.sinosure.mq.log
+cn.com.sinosure.mq.producer
+cn.com.sinosure.mq.utils.spring
+cn.com.sinosure.mq.utils.web

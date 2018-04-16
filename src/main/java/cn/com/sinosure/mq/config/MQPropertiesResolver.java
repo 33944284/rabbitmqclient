@@ -132,28 +132,30 @@ public class MQPropertiesResolver {
 		return properties.getProperty("rabbit.port");
 	}
 	
-	public static void main(String[] args){
+	public static void main(String[] args) throws IOException{
 //		MQPropertiesResolver instance = new MQPropertiesResolver();
-//		System.out.println("=="+MQPropertiesResolver.getMQProperties("rabbit.edoc-biz"));
+		System.out.println("=="+MQPropertiesResolver.getMQProperties("rabbit.edoc-biz"));
 		
-		
-		File sourceFileDir = new File(CONFIG_FILE_DIR);
-		
-		File[] configList =	sourceFileDir.listFiles(new FilenameFilter() {
-            
-            @Override
-            public boolean accept(File dir, String name) {
-                if(name.startsWith(CONFIG_FILE_PREFIX)){
-                	System.out.println("===="+name);
-                	return true;
-                }else{
-                	System.out.println("false===="+name);
-
-                	return false;
-                }
-            }
-        });
-		
-		System.out.println(configList.length);
+//		
+//		File sourceFileDir = new File(CONFIG_FILE_DIR);
+//		
+//		File[] configList =	sourceFileDir.listFiles(new FilenameFilter() {
+//            
+//            @Override
+//            public boolean accept(File dir, String name) {
+//                if(name.startsWith(CONFIG_FILE_PREFIX)){
+//                	System.out.println("===="+name);
+//                	return true;
+//                }else{
+//                	System.out.println("false===="+name);
+//
+//                	return false;
+//                }
+//            }
+//        });
+//		
+//		System.out.println(configList.length);
+//	}
+		loadConfig();
 	}
 }
